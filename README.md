@@ -18,6 +18,8 @@ This repository is the **TypeScript CLI for the Portal side** of that platform. 
 
 This repository also includes **repo-local skills** for coding agents. Those skills are not runtime dependencies of AltLLM itself. They are structured guidance files that help agents choose the right commands, follow the right workflow, and avoid mixing up Portal operations with gateway usage.
 
+It also hosts repo-local skills and local CLI wrappers for related AltLLM-operated surfaces such as **Cloud Claw / AltClaw**. The source implementation still lives in sibling repositories, but the operational workflow is discoverable and scriptable here.
+
 Current commands:
 
 - `altllm login-wallet`
@@ -37,6 +39,17 @@ Current commands:
 - `altllm topup-crypto`
 - `altllm payment-status`
 - `altllm pay-payment-link`
+- `altllm cloud-claw-me`
+- `altllm cloud-claw-deployments`
+- `altllm cloud-claw-deployment`
+- `altllm cloud-claw-deploy`
+- `altllm cloud-claw-start`
+- `altllm cloud-claw-stop`
+- `altllm cloud-claw-restart`
+- `altllm cloud-claw-renew`
+- `altllm cloud-claw-auto-renew`
+- `altllm cloud-claw-delete`
+- `altllm cloud-claw-logs`
 
 This CLI targets the AltLLM Portal API, not the OpenAI-compatible gateway.
 
@@ -71,6 +84,9 @@ node dist/cli.js <command> [options]
 | `altllm-portal-billing` | Balance, promo, transactions, and usage analytics | Credit balance, promo redemption, billing history, usage views |
 | `altllm-portal-payments` | Payment-link creation, polling, and direct payment execution | Crypto top-up, payment status, direct wallet payment |
 | `altllm-portal-cli` | Umbrella navigation skill | Workflows that span multiple domains |
+| `cloud-claw-launch-agent` | Launch a new AltClaw / OpenClaw / PicoClaw / Ottie VM | New deployment workflow through the local `cloud-claw-*` CLI commands |
+| `cloud-claw-manage-vm` | View and manage existing Cloud Claw VMs | List, inspect, start, stop, renew, logs, and dashboard |
+| `cloud-claw` | Umbrella navigation skill for Cloud Claw | Cross-domain Cloud Claw flows |
 
 ## Typical Workflows
 
@@ -91,6 +107,69 @@ Use this when the user wants current balance, billing transactions, or usage his
 `altllm-portal-payments` -> `altllm-portal-billing`
 
 Use this when the user needs to create a payment link, wait for settlement, and then confirm the resulting balance or usage changes.
+
+**Launch and Manage AltClaw**
+
+`cloud-claw-launch-agent` -> `cloud-claw-manage-vm`
+
+Use this when the user wants to create a new AltClaw / PicoClaw / Ottie VM and then inspect status, logs, renewal, or dashboard access in Cloud Claw.
+
+## Cloud Claw
+
+Inspect Cloud Claw user state:
+
+```bash
+node dist/cli.js cloud-claw-me
+```
+
+List deployments:
+
+```bash
+node dist/cli.js cloud-claw-deployments
+```
+
+Get one deployment:
+
+```bash
+node dist/cli.js cloud-claw-deployment --name swift-owl-9
+```
+
+Launch a new PicoClaw:
+
+```bash
+node dist/cli.js cloud-claw-deploy \
+  --name swift-owl-9 \
+  --agent-type picoclaw \
+  --telegram-bot-token 123456789:ABC...
+```
+
+Launch a new OpenClaw:
+
+```bash
+node dist/cli.js cloud-claw-deploy \
+  --name happy-fox-12 \
+  --agent-type openclaw \
+  --model altllm/altllm-standard \
+  --telegram-bot-token 123456789:ABC...
+```
+
+Manage an existing VM:
+
+```bash
+node dist/cli.js cloud-claw-start --name swift-owl-9
+node dist/cli.js cloud-claw-stop --name swift-owl-9
+node dist/cli.js cloud-claw-restart --name swift-owl-9
+node dist/cli.js cloud-claw-renew --name swift-owl-9
+node dist/cli.js cloud-claw-auto-renew --name swift-owl-9 --enabled true
+node dist/cli.js cloud-claw-delete --name swift-owl-9
+```
+
+Read logs:
+
+```bash
+node dist/cli.js cloud-claw-logs --name swift-owl-9
+node dist/cli.js cloud-claw-logs --name swift-owl-9 --stream
+```
 
 ## Authentication
 
@@ -380,6 +459,9 @@ node dist/cli.js login-wallet \
 - `skills/altllm-portal-api-keys/`: Portal API key lifecycle
 - `skills/altllm-portal-billing/`: balance, promo, transactions, and usage history
 - `skills/altllm-portal-payments/`: payment-link creation, polling, and direct payment
+- `skills/cloud-claw/`: umbrella skill for Cloud Claw workflows
+- `skills/cloud-claw-launch-agent/`: new deployment workflow for AltClaw / OpenClaw / PicoClaw / Ottie
+- `skills/cloud-claw-manage-vm/`: VM list, lifecycle, logs, renewals, and dashboard access
 
 ## Repo-Local Skills
 

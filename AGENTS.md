@@ -23,6 +23,17 @@ Current commands:
 - `altllm topup-crypto`
 - `altllm payment-status`
 - `altllm pay-payment-link`
+- `altllm cloud-claw-me`
+- `altllm cloud-claw-deployments`
+- `altllm cloud-claw-deployment`
+- `altllm cloud-claw-deploy`
+- `altllm cloud-claw-start`
+- `altllm cloud-claw-stop`
+- `altllm cloud-claw-restart`
+- `altllm cloud-claw-renew`
+- `altllm cloud-claw-auto-renew`
+- `altllm cloud-claw-delete`
+- `altllm cloud-claw-logs`
 
 The CLI targets the AltLLM Portal API, not the OpenAI-compatible gateway.
 

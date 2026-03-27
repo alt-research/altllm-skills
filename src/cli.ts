@@ -2,6 +2,19 @@
 import { Command } from "commander";
 
 import { createApiKey } from "./commands/create-api-key.js";
+import { cloudClawDeployment } from "./commands/cloud-claw-deployment.js";
+import { cloudClawDeploy } from "./commands/cloud-claw-deploy.js";
+import { cloudClawDeployments } from "./commands/cloud-claw-deployments.js";
+import {
+  cloudClawAutoRenew,
+  cloudClawDelete,
+  cloudClawRenew,
+  cloudClawRestart,
+  cloudClawStart,
+  cloudClawStop,
+} from "./commands/cloud-claw-lifecycle.js";
+import { cloudClawLogs } from "./commands/cloud-claw-logs.js";
+import { cloudClawMe } from "./commands/cloud-claw-me.js";
 import { credit } from "./commands/credit.js";
 import { getApiKey } from "./commands/get-api-key.js";
 import { listApiKeys } from "./commands/list-api-keys.js";
@@ -20,6 +33,8 @@ import { usageTimeline } from "./commands/usage-timeline.js";
 import { DEFAULT_SESSION_FILE } from "./lib/session.js";
 
 const program = new Command();
+const DEFAULT_CLOUD_CLAW_BASE_URL =
+  process.env.CLOUD_CLAW_BASE_URL || "https://claw.altllm.ai";
 
 function collectOptionValues(value: string, previous?: string[]): string[] {
   return [...(previous ?? []), value];
@@ -64,6 +79,189 @@ program
   .action(async (options) => {
     await logout({
       sessionFile: options.sessionFile,
+    });
+  });
+
+program
+  .command("cloud-claw-me")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawMe({
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-deployments")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--include-all", "List all deployments in admin mode", false)
+  .option("--include-user-info", "Include user info when listing all deployments", false)
+  .action(async (options) => {
+    await cloudClawDeployments({
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+      includeAll: Boolean(options.includeAll),
+      includeUserInfo: Boolean(options.includeUserInfo),
+    });
+  });
+
+program
+  .command("cloud-claw-deployment")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawDeployment({
+      name: options.name,
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-deploy")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .requiredOption("--agent-type <type>", "Agent type: openclaw, picoclaw, or aintern")
+  .option("--model <model>", "OpenClaw model, for example altllm/altllm-standard")
+  .option("--telegram-bot-token <token>", "Telegram bot token for PicoClaw or Ottie")
+  .option("--telegram-allowed-users <ids>", "Comma-separated numeric Telegram user IDs")
+  .option("--altllm-api-key <key>", "Optional explicit AltLLM API key override")
+  .option("--altllm-api-base <url>", "Optional explicit AltLLM API base override")
+  .option("--anthropic-api-key <key>", "Optional Anthropic API key override")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawDeploy({
+      name: options.name,
+      agentType: options.agentType,
+      model: options.model,
+      telegramBotToken: options.telegramBotToken,
+      telegramAllowedUsers: options.telegramAllowedUsers,
+      altllmApiKey: options.altllmApiKey,
+      altllmApiBase: options.altllmApiBase,
+      anthropicApiKey: options.anthropicApiKey,
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-start")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawStart({
+      name: options.name,
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-stop")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawStop({
+      name: options.name,
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-restart")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawRestart({
+      name: options.name,
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-renew")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawRenew({
+      name: options.name,
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-auto-renew")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .requiredOption("--enabled <bool>", "Whether auto-renew should be enabled: true or false")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawAutoRenew({
+      name: options.name,
+      enabled: String(options.enabled).toLowerCase() === "true",
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-delete")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .action(async (options) => {
+    await cloudClawDelete({
+      name: options.name,
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+    });
+  });
+
+program
+  .command("cloud-claw-logs")
+  .requiredOption("--name <name>", "Cloud Claw deployment short name")
+  .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--stream", "Stream logs via SSE", false)
+  .action(async (options) => {
+    await cloudClawLogs({
+      name: options.name,
+      baseUrl: options.cloudClawBaseUrl,
+      sessionFile: options.sessionFile,
+      forceSso: Boolean(options.forceSso),
+      stream: Boolean(options.stream),
     });
   });
 
