@@ -1,6 +1,22 @@
-# AltLLM CLI
+# AltLLM Portal CLI and Skills
 
-TypeScript CLI for AltLLM Portal operations.
+TypeScript CLI and repo-local agent skills for AltLLM Portal operations.
+
+## Introduction
+
+**AltLLM** is a platform that gives users a managed way to access AltLLM models and infrastructure. In practice, the platform has two main surfaces:
+
+- the **Portal API**, which handles user auth, wallet login, API keys, credit balance, billing history, promo redemption, and crypto payment links
+- the **OpenAI-compatible gateway**, which is where generated API keys are used to call AltLLM models
+
+This repository is the **TypeScript CLI for the Portal side** of that platform. It is meant for operational tasks such as:
+
+- logging in with a wallet
+- creating and managing Portal-issued API keys
+- checking balance, transactions, and usage history
+- creating and settling crypto top-up payments
+
+This repository also includes **repo-local skills** for coding agents. Those skills are not runtime dependencies of AltLLM itself. They are structured guidance files that help agents choose the right commands, follow the right workflow, and avoid mixing up Portal operations with gateway usage.
 
 Current commands:
 

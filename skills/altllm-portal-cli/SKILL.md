@@ -8,6 +8,13 @@ user-invocable: true
 
 Use this umbrella skill when working inside this repository and the task crosses multiple Portal domains. For focused requests, prefer one of the domain skills below.
 
+AltLLM itself has two distinct surfaces that are easy to confuse:
+
+- the **Portal API**, which manages auth, billing, API keys, and payment links
+- the **OpenAI-compatible gateway**, which consumes Portal-issued API keys for model inference
+
+This skill family is specifically about the **Portal CLI workflow** in this repository. Use it to operate the Portal side safely and consistently, not to document or proxy the gateway itself.
+
 ## Shared Setup
 
 > Before the first `altllm` command in a fresh checkout, read and follow:
