@@ -1,4 +1,4 @@
-# AltLLM Portal CLI and Skills
+# AltLLM Skills
 
 TypeScript CLI and repo-local agent skills for AltLLM Portal operations.
 
