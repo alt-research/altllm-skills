@@ -6,6 +6,7 @@ import { credit } from "./commands/credit.js";
 import { getApiKey } from "./commands/get-api-key.js";
 import { listApiKeys } from "./commands/list-api-keys.js";
 import { loginWallet } from "./commands/login-wallet.js";
+import { logout } from "./commands/logout.js";
 import { payPaymentLink } from "./commands/pay-payment-link.js";
 import { redeemPromo } from "./commands/redeem-promo.js";
 import { revokeApiKey } from "./commands/revoke-api-key.js";
@@ -53,6 +54,15 @@ program
       prepare: Boolean(options.prepare),
       nonce: options.nonce,
       signature: options.signature,
+      sessionFile: options.sessionFile,
+    });
+  });
+
+program
+  .command("logout")
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .action(async (options) => {
+    await logout({
       sessionFile: options.sessionFile,
     });
   });

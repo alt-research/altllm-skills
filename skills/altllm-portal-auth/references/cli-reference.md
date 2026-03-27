@@ -63,3 +63,26 @@ node dist/cli.js login-wallet \
 - If no local private key and no signature are provided, `login-wallet` returns a challenge payload.
 - The current backend rejects non-EVM address formats.
 - Signature validation is Ethereum-style message recovery on the server.
+
+### Logout local session
+
+```bash
+node dist/cli.js logout
+```
+
+Representative stdout:
+
+```json
+{
+  "ok": true,
+  "loggedOut": true,
+  "sessionFile": "/Users/<user>/.altllm/portal-cli-session.json",
+  "user": {
+    "id": "user_123",
+    "email": "0x...@wallet.altllm.local",
+    "name": "0x1234...abcd"
+  },
+  "baseUrl": "https://platform-api.altllm.ai",
+  "message": "Local Portal session removed."
+}
+```

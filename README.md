@@ -5,6 +5,7 @@ TypeScript CLI for AltLLM Portal operations.
 Current commands:
 
 - `altllm login-wallet`
+- `altllm logout`
 - `altllm credit`
 - `altllm transactions`
 - `altllm usage-summary`
@@ -49,7 +50,7 @@ node dist/cli.js <command> [options]
 
 | Skill | Purpose | Use When |
 |---|---|---|
-| `altllm-portal-auth` | Wallet login and session bootstrap | Wallet challenge, local signing, external signature verification |
+| `altllm-portal-auth` | Wallet login, logout, and session bootstrap | Wallet challenge, local signing, external signature verification, local session removal |
 | `altllm-portal-api-keys` | Portal API key lifecycle | Create, inspect, disable, re-enable, or revoke API keys |
 | `altllm-portal-billing` | Balance, promo, transactions, and usage analytics | Credit balance, promo redemption, billing history, usage views |
 | `altllm-portal-payments` | Payment-link creation, polling, and direct payment execution | Crypto top-up, payment status, direct wallet payment |
@@ -89,6 +90,14 @@ node dist/cli.js login-wallet \
 Successful login stores a session at:
 
 - `~/.altllm/portal-cli-session.json`
+
+Remove the local Portal session:
+
+```bash
+node dist/cli.js logout
+```
+
+`logout` only clears the local saved session file used by this CLI. It does not revoke API keys.
 
 Use `ALTLLM_WALLET_PRIVATE_KEY` instead of passing `--private-key` inline whenever possible.
 

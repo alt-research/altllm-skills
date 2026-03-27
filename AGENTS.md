@@ -7,6 +7,7 @@ This repository contains the TypeScript CLI for AltLLM Portal operations.
 Current commands:
 
 - `altllm login-wallet`
+- `altllm logout`
 - `altllm credit`
 - `altllm transactions`
 - `altllm usage-summary`

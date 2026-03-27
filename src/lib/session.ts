@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { homedir } from "node:os";
 
@@ -30,3 +30,20 @@ export async function loadSession(path: string): Promise<PortalSession> {
   }
 }
 
+export async function deleteSession(path: string): Promise<boolean> {
+  try {
+    await unlink(path);
+    return true;
+  } catch (error) {
+    const code =
+      typeof error === "object" && error !== null && "code" in error
+        ? String((error as { code?: string }).code)
+        : "";
+
+    if (code === "ENOENT") {
+      return false;
+    }
+
+    throw new CliError(`Failed to delete session file: ${path}`);
+  }
+}

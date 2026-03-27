@@ -1,6 +1,6 @@
 ---
 name: altllm-portal-auth
-description: Use this skill when the user asks to log in with a wallet, fetch a wallet sign-in challenge, verify an externally signed challenge, or troubleshoot AltLLM Portal wallet login for the local altllm CLI. Do NOT use for API key management, billing history, or payment links.
+description: Use this skill when the user asks to log in or out with a wallet session, fetch a wallet sign-in challenge, verify an externally signed challenge, or troubleshoot AltLLM Portal wallet login for the local altllm CLI. Do NOT use for API key management, billing history, or payment links.
 user-invocable: true
 ---
 
@@ -21,6 +21,7 @@ Wallet login and session bootstrap for the local `altllm` CLI.
 | `login-wallet` | Sign in with a locally available private key |
 | `login-wallet --prepare` | Fetch a challenge for external signing |
 | `login-wallet --nonce <nonce> --signature <sig>` | Verify an externally signed challenge and save the session |
+| `logout` | Remove the local saved Portal session file |
 
 ## Rules
 
@@ -29,6 +30,7 @@ Wallet login and session bootstrap for the local `altllm` CLI.
 - If neither a local private key nor `--signature` is available, return the challenge payload and stop.
 - Current backend support is still limited to EVM addresses and Ethereum-style signatures.
 - Save the resulting session to `~/.altllm/portal-cli-session.json` unless overridden.
+- `logout` only removes the local session file. It does not revoke API keys.
 
 ## Reference
 
