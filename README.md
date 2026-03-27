@@ -123,6 +123,7 @@ node dist/cli.js login-wallet \
 Notes:
 
 - The CLI no longer assumes it must hold the user's private key.
+- External signers such as Privy are supported as long as they can sign the challenge message and return the wallet signature.
 - The current Portal backend still validates EVM addresses and Ethereum-style signatures.
 - If you run `login-wallet` without a local private key or `--signature`, it now returns a challenge payload instead of failing immediately.
 

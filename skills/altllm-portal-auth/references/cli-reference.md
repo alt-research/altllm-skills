@@ -48,6 +48,8 @@ Representative stdout:
 }
 ```
 
+This flow is intended for wallets or wallet providers that sign externally, such as Privy.
+
 ### Verify externally signed challenge
 
 ```bash
@@ -61,6 +63,7 @@ node dist/cli.js login-wallet \
 ## Notes
 
 - If no local private key and no signature are provided, `login-wallet` returns a challenge payload.
+- External signers such as Privy work if they can sign the returned challenge message for the supplied wallet address.
 - The current backend rejects non-EVM address formats.
 - Signature validation is Ethereum-style message recovery on the server.
 

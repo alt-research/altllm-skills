@@ -37,12 +37,12 @@ program
     "Portal API base URL",
     process.env.ALTLLM_PORTAL_API_URL || "https://platform-api.altllm.ai"
   )
-  .option("--private-key <hex>", "EVM private key")
-  .option("--private-key-env <name>", "Environment variable containing the private key", "ALTLLM_WALLET_PRIVATE_KEY")
+  .option("--private-key <hex>", "EVM private key for local signing")
+  .option("--private-key-env <name>", "Environment variable containing the private key for local signing", "ALTLLM_WALLET_PRIVATE_KEY")
   .option("--chain-id <number>", "Chain ID for the login challenge", "1")
-  .option("--prepare", "Fetch a wallet challenge and print it without signing", false)
-  .option("--nonce <value>", "Existing challenge nonce for externally signed login")
-  .option("--signature <hex>", "Externally produced wallet signature for the challenge message")
+  .option("--prepare", "Fetch a wallet challenge for an external signer such as Privy", false)
+  .option("--nonce <value>", "Existing challenge nonce for external-signature login")
+  .option("--signature <hex>", "Wallet signature produced externally, for example by Privy")
   .option("--session-file <path>", "Path to save the session token", DEFAULT_SESSION_FILE)
   .action(async (options) => {
     await loginWallet({

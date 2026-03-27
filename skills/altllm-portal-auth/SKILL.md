@@ -6,7 +6,7 @@ user-invocable: true
 
 # AltLLM Portal Auth
 
-Wallet login and session bootstrap for the local `altllm` CLI.
+ Wallet login and session bootstrap for the local `altllm` CLI, including external signers such as Privy.
 
 ## Shared Setup
 
@@ -27,6 +27,7 @@ Wallet login and session bootstrap for the local `altllm` CLI.
 
 - Do not assume the CLI must control the wallet private key.
 - If the wallet can sign the challenge message, use the prepare + verify flow.
+- External signers such as Privy are valid as long as they return a standard wallet signature for the challenge.
 - If neither a local private key nor `--signature` is available, return the challenge payload and stop.
 - Current backend support is still limited to EVM addresses and Ethereum-style signatures.
 - Save the resulting session to `~/.altllm/portal-cli-session.json` unless overridden.
