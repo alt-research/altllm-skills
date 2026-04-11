@@ -34,7 +34,7 @@ interface PaymentLinkRecord {
   amount: number;
   currency: string;
   status: string;
-  provider_status: string;
+  provider_status: string | null;
   settlement_amount: number | null;
   webhook_received_at?: string | null;
   created_at: string;
@@ -50,8 +50,7 @@ interface PaymentLinksResponse {
 }
 
 const TERMINAL_STATUSES = new Set(["completed", "expired", "failed", "deactivated"]);
-const PAYMENT_LINKS_PAGE_SIZE = 100;
-const MAX_PAYMENT_LINK_PAGE_FETCHES = 100;
+const PAYMENT_LINK_LOOKUP_LIMIT = 100;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -62,34 +61,20 @@ export async function fetchPaymentLinkStatus(
   token: string,
   paymentLinkId: string
 ): Promise<PaymentLinkRecord> {
-  let offset = 0;
-  const seenPageSignatures = new Set<string>();
+  const payload = await requestJson<PaymentLinksResponse>({
+    method: "GET",
+    url: `${baseUrl}/api/billing/payment-links?limit=${PAYMENT_LINK_LOOKUP_LIMIT}`,
+    token,
+  });
 
-  for (let attempts = 0; attempts < MAX_PAYMENT_LINK_PAGE_FETCHES; attempts += 1) {
-    const payload = await requestJson<PaymentLinksResponse>({
-      method: "GET",
-      url: `${baseUrl}/api/billing/payment-links?limit=${PAYMENT_LINKS_PAGE_SIZE}&offset=${offset}`,
-      token,
-    });
-
-    const link = payload.payment_links.find((item) => item.id === paymentLinkId);
-    if (link) {
-      return link;
-    }
-
-    if (payload.payment_links.length < PAYMENT_LINKS_PAGE_SIZE) {
-      break;
-    }
-
-    const pageSignature = payload.payment_links.map((item) => item.id).join(",");
-    if (seenPageSignatures.has(pageSignature)) {
-      break;
-    }
-    seenPageSignatures.add(pageSignature);
-    offset += payload.payment_links.length;
+  const link = payload.payment_links.find((item) => item.id === paymentLinkId);
+  if (link) {
+    return link;
   }
 
-  throw new CliError(`Payment link not found: ${paymentLinkId}`);
+  throw new CliError(
+    `Payment link not found in the recent ${PAYMENT_LINK_LOOKUP_LIMIT} Portal payment links: ${paymentLinkId}`
+  );
 }
 
 export function isTerminalPaymentLinkStatus(status: string): boolean {

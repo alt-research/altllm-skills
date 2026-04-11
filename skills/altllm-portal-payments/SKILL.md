@@ -28,6 +28,7 @@ Payment-link creation, settlement polling, and direct wallet payment flows for t
 - `pay-payment-link` must not pay terminal links (`completed`, `expired`, `failed`, `deactivated`).
 - Do not silently downgrade from direct payment to hosted checkout.
 - `pay-payment-link --wait` should emit one final JSON document.
+- Payment-link lookup currently depends on the Portal `GET /api/billing/payment-links?limit=100` view because the backend does not expose per-link lookup or offset pagination.
 - Supported direct-payment currencies are:
   - `eth`
   - `usdterc20`

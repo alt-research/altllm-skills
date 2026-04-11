@@ -4,6 +4,7 @@ import {
   KeyDetail,
   parseMutableKeyStatus,
   resolvePortalContext,
+  validateApiKeyName,
   writeJson,
 } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
@@ -26,11 +27,7 @@ export async function updateApiKey(options: UpdateApiKeyOptions): Promise<void> 
   } = {};
 
   if (options.name !== undefined) {
-    const name = options.name.trim();
-    if (!name) {
-      throw new CliError("API key name cannot be empty.");
-    }
-    body.name = name;
+    body.name = validateApiKeyName(options.name);
   }
 
   const permissions = buildKeyPermissions({

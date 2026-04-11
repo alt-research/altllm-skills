@@ -45,6 +45,8 @@ export interface KeyDeletedResponse {
 
 export const MUTABLE_KEY_STATUSES = ["active", "disabled", "revoked"] as const;
 export type MutableKeyStatus = (typeof MUTABLE_KEY_STATUSES)[number];
+const API_KEY_NAME_PATTERN = /^[a-zA-Z0-9 _\-.]+$/;
+const API_KEY_NAME_MAX_LENGTH = 64;
 
 export async function resolvePortalContext(options: {
   baseUrl?: string;
@@ -81,7 +83,7 @@ export function buildKeyPermissions(params: {
   }
 
   for (const model of models) {
-    if (!/^altllm-[a-zA-Z0-9-]+$/.test(model)) {
+    if (!model.startsWith("altllm-")) {
       throw new CliError(
         `Invalid model ID: ${model}. Model IDs must start with 'altllm-'.`
       );
@@ -89,6 +91,25 @@ export function buildKeyPermissions(params: {
   }
 
   return { models };
+}
+
+export function validateApiKeyName(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    throw new CliError("API key name cannot be empty.");
+  }
+
+  if (trimmed.length > API_KEY_NAME_MAX_LENGTH) {
+    throw new CliError(`API key name must be ${API_KEY_NAME_MAX_LENGTH} characters or fewer.`);
+  }
+
+  if (!API_KEY_NAME_PATTERN.test(trimmed)) {
+    throw new CliError(
+      "API key name can only contain letters, numbers, spaces, hyphens, underscores, and periods."
+    );
+  }
+
+  return trimmed;
 }
 
 export function parseMutableKeyStatus(status: string): MutableKeyStatus {

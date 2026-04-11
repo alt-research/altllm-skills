@@ -45,6 +45,8 @@ node dist/cli.js usage-summary \
   --base-url https://platform-api.altllm.ai
 ```
 
+This endpoint currently returns the current calendar-month summary.
+
 ### Usage timeline
 
 ```bash

@@ -21,7 +21,7 @@ Balance, promo, transaction history, and usage analytics for the local `altllm` 
 | `credit` | Current Portal balance, expiry, and allowed models |
 | `redeem-promo` | Redeem a promo code |
 | `transactions` | Billing transaction history with pagination and type filters |
-| `usage-summary` | Current billing period summary |
+| `usage-summary` | Current calendar-month summary |
 | `usage-timeline` | Daily usage history |
 | `usage-by-model` | Usage grouped by model |
 | `usage-by-key` | Usage grouped by API key |
@@ -31,6 +31,7 @@ Balance, promo, transaction history, and usage analytics for the local `altllm` 
 - These commands use the saved Portal session token.
 - History commands mostly return raw Portal API JSON.
 - `transactions` supports `--page`, `--limit`, and `--type`.
+- `usage-summary` currently reflects the current calendar month only.
 - `usage-timeline` and `usage-by-model` support either `--month` or an explicit date range.
 - `usage-by-key` currently supports explicit date range only.
 

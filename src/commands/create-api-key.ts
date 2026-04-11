@@ -1,8 +1,9 @@
-import { CliError, requestJson } from "../lib/api.js";
+import { requestJson } from "../lib/api.js";
 import {
   buildKeyPermissions,
   CreateKeyResponse,
   resolvePortalContext,
+  validateApiKeyName,
   writeJson,
 } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
@@ -16,10 +17,7 @@ export interface CreateApiKeyOptions {
 }
 
 export async function createApiKey(options: CreateApiKeyOptions): Promise<void> {
-  const name = options.name.trim();
-  if (!name) {
-    throw new CliError("API key name cannot be empty.");
-  }
+  const name = validateApiKeyName(options.name);
 
   const permissions = buildKeyPermissions({
     models: options.models,
