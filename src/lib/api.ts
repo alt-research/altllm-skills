@@ -55,7 +55,9 @@ export async function fetchWithTimeout(params: {
       );
     }
 
-    throw error;
+    const detail =
+      error instanceof Error && error.message ? error.message : String(error);
+    throw new CliError(`${params.method} ${params.url} failed: ${detail}`);
   } finally {
     clearTimeout(timer);
   }
