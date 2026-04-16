@@ -1,4 +1,9 @@
-import { CliError, normalizeBaseUrl, requestJson } from "./api.js";
+import {
+  canonicalizeOrigin,
+  CliError,
+  normalizeBaseUrl,
+  requestJson,
+} from "./api.js";
 import { DEFAULT_SESSION_FILE, loadSession } from "./session.js";
 
 export const TRUSTED_CLOUD_CLAW_BASE_URL = "https://claw.altllm.ai";
@@ -20,9 +25,11 @@ function ensureCloudClawBaseUrlAllowed(params: {
   const normalizedTrustedBaseUrl = normalizeCloudClawBaseUrl(
     TRUSTED_CLOUD_CLAW_BASE_URL
   );
+  const canonicalBaseUrlOrigin = canonicalizeOrigin(normalizedBaseUrl);
+  const canonicalTrustedOrigin = canonicalizeOrigin(normalizedTrustedBaseUrl);
 
   if (
-    normalizedBaseUrl !== normalizedTrustedBaseUrl &&
+    canonicalBaseUrlOrigin !== canonicalTrustedOrigin &&
     !params.allowTokenForwarding
   ) {
     throw new CliError(

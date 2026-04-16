@@ -2,7 +2,7 @@ import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { homedir } from "node:os";
 
-import { CliError, normalizeBaseUrl } from "./api.js";
+import { canonicalizeOrigin, CliError, normalizeBaseUrl } from "./api.js";
 
 export interface PortalSession {
   baseUrl: string;
@@ -25,9 +25,11 @@ export function resolveSessionBackedBaseUrl(params: {
   const normalizedBaseUrl = normalizeBaseUrl(
     params.baseUrl || params.sessionBaseUrl
   );
+  const canonicalSessionOrigin = canonicalizeOrigin(normalizedSessionBaseUrl);
+  const canonicalRequestedOrigin = canonicalizeOrigin(normalizedBaseUrl);
 
   if (
-    normalizedBaseUrl !== normalizedSessionBaseUrl &&
+    canonicalRequestedOrigin !== canonicalSessionOrigin &&
     !params.allowTokenHostMismatch
   ) {
     throw new CliError(
