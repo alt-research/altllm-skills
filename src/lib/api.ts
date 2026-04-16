@@ -5,8 +5,60 @@ export class CliError extends Error {
   }
 }
 
+const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
+
 export function normalizeBaseUrl(baseUrl: string): string {
   return baseUrl.replace(/\/+$/, "");
+}
+
+function resolveRequestTimeoutMs(): number {
+  const raw = process.env.ALTLLM_HTTP_TIMEOUT_MS?.trim();
+  if (!raw) {
+    return DEFAULT_REQUEST_TIMEOUT_MS;
+  }
+
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new CliError("ALTLLM_HTTP_TIMEOUT_MS must be a positive number of milliseconds.");
+  }
+
+  return parsed;
+}
+
+export async function fetchWithTimeout(params: {
+  method: string;
+  url: string;
+  headers?: Record<string, string>;
+  body?: string;
+  timeoutMs?: number;
+}): Promise<Response> {
+  const timeoutMs = params.timeoutMs ?? resolveRequestTimeoutMs();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(params.url, {
+      method: params.method,
+      headers: params.headers,
+      body: params.body,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "name" in error &&
+      (error as { name?: string }).name === "AbortError"
+    ) {
+      throw new CliError(
+        `${params.method} ${params.url} timed out after ${timeoutMs}ms.`
+      );
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function requestJson<T>({
@@ -33,8 +85,9 @@ export async function requestJson<T>({
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
+  const response = await fetchWithTimeout({
     method,
+    url,
     headers,
     body: payload,
   });
@@ -48,4 +101,3 @@ export async function requestJson<T>({
 
   return json as T;
 }
-

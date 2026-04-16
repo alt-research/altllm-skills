@@ -1,4 +1,4 @@
-import { CliError, normalizeBaseUrl } from "../lib/api.js";
+import { CliError, fetchWithTimeout, normalizeBaseUrl } from "../lib/api.js";
 import { DEFAULT_CLOUD_CLAW_BASE_URL, getCloudClawJwt, validateDeploymentName } from "../lib/cloud-claw.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -19,7 +19,9 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
   });
 
   if (!options.stream) {
-    const response = await fetch(`${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs`, {
+    const response = await fetchWithTimeout({
+      method: "GET",
+      url: `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs`,
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${jwt}`,

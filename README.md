@@ -436,6 +436,11 @@ node dist/cli.js pay-payment-link \
 - Terminal payment-link statuses such as `completed`, `expired`, `failed`, and `deactivated` are rejected before direct payment is sent.
 - Payment-link lookup currently scans the most recent `100` Portal payment links via `GET /api/billing/payment-links?limit=100`.
 
+## HTTP Timeouts
+
+- Non-stream CLI HTTP requests time out after `30000ms` by default.
+- Override this with `ALTLLM_HTTP_TIMEOUT_MS` if you need a different non-stream request timeout.
+
 Supported direct-payment currencies:
 
 - `eth`
