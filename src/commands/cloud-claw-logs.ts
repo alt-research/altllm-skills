@@ -38,8 +38,13 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
   }
 
   const response = await fetch(
-    `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs/stream?auth=${encodeURIComponent(jwt)}`,
-    { headers: { Accept: "text/event-stream" } }
+    `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs/stream`,
+    {
+      headers: {
+        Accept: "text/event-stream",
+        Authorization: `Bearer ${jwt}`,
+      },
+    }
   );
 
   if (!response.ok || !response.body) {
