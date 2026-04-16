@@ -42,7 +42,7 @@ The implementation source of truth is the sibling repository:
   - or full names with `openclaw-`, `picoclaw-`, `aintern-`
 - `restart` is not a dedicated API endpoint. Treat it as:
   - stop
-  - wait for completion
+  - poll deployment status until it reaches a stopped state such as `stopped` or `terminated`
   - start
 - `renew` and `auto-renew` are user-facing billing operations, not infra-only actions.
 - Prefer the local `altllm cloud-claw-*` commands over raw HTTP.
