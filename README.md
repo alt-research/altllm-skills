@@ -195,6 +195,8 @@ Successful login stores a session at:
 
 - `~/.altllm/portal-cli-session.json`
 
+On POSIX systems, the CLI saves the session directory and file with private permissions (`0700` for the directory and `0600` for the file).
+
 Remove the local Portal session:
 
 ```bash
