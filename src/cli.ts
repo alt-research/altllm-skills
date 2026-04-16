@@ -61,6 +61,18 @@ function parsePositiveNumberOption(value: string, optionName: string): number {
   return parsed;
 }
 
+function parseBooleanOption(value: string, optionName: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "true") {
+    return true;
+  }
+  if (normalized === "false") {
+    return false;
+  }
+
+  throw new CliError(`${optionName} must be either true or false.`);
+}
+
 program
   .name("altllm")
   .description("CLI for AltLLM Portal auth, API key management, billing, and payments");
@@ -264,7 +276,7 @@ program
   .action(async (options) => {
     await cloudClawAutoRenew({
       name: options.name,
-      enabled: String(options.enabled).toLowerCase() === "true",
+      enabled: parseBooleanOption(options.enabled, "--enabled"),
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
