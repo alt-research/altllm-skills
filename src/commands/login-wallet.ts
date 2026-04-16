@@ -1,6 +1,10 @@
 import { CliError, normalizeBaseUrl, requestJson } from "../lib/api.js";
 import { DEFAULT_SESSION_FILE, saveSession } from "../lib/session.js";
-import { normalizeWalletSignature, resolvePrivateKey, signChallengeMessage } from "../lib/wallet.js";
+import {
+  normalizeWalletSignature,
+  resolvePrivateKey,
+  signChallengeMessage,
+} from "../lib/wallet.js";
 
 interface CryptoChallengeResponse {
   wallet_address: string;
@@ -23,7 +27,9 @@ export interface LoginWalletOptions {
   baseUrl: string;
   walletAddress: string;
   privateKey?: string;
+  privateKeyFile?: string;
   privateKeyEnv: string;
+  allowUnsafePrivateKeyArgv?: boolean;
   chainId: number;
   prepare?: boolean;
   nonce?: string;
@@ -325,7 +331,9 @@ export async function loginWallet(options: LoginWalletOptions): Promise<void> {
   }
 
   const hasLocalPrivateKey = Boolean(
-    options.privateKey?.trim() || process.env[options.privateKeyEnv]?.trim()
+    options.privateKey?.trim() ||
+      options.privateKeyFile?.trim() ||
+      process.env[options.privateKeyEnv]?.trim()
   );
 
   if (!hasLocalPrivateKey) {
@@ -347,7 +355,12 @@ export async function loginWallet(options: LoginWalletOptions): Promise<void> {
     return;
   }
 
-  const privateKey = resolvePrivateKey(options.privateKey, options.privateKeyEnv);
+  const privateKey = await resolvePrivateKey({
+    explicit: options.privateKey,
+    filePath: options.privateKeyFile,
+    envName: options.privateKeyEnv,
+    allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+  });
   validateChallengeMessageForAutoSign({
     baseUrl,
     requestedWalletAddress: walletAddress,

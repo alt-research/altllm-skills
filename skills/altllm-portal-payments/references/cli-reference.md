@@ -41,6 +41,13 @@ node dist/cli.js pay-payment-link \
   --wait
 ```
 
+Safer key input paths for payment commands:
+
+- `--private-key-env <ENV_NAME>`
+- `--private-key-file <path>`
+
+Direct `--private-key` usage now requires `--allow-unsafe-private-key-argv`.
+
 ## Notes
 
 - `payment-status` and `pay-payment-link` currently only search the newest `100` Portal payment links.

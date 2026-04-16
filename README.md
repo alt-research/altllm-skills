@@ -220,6 +220,13 @@ node dist/cli.js logout
 
 Use `ALTLLM_WALLET_PRIVATE_KEY` instead of passing `--private-key` inline whenever possible.
 
+Safer local private-key input paths:
+
+- `--private-key-env <ENV_NAME>`
+- `--private-key-file <path>`
+
+Direct `--private-key` usage is still available for compatibility, but now requires `--allow-unsafe-private-key-argv`.
+
 If the wallet can sign but you do not control its private key locally, prepare a challenge first:
 
 ```bash
@@ -442,6 +449,13 @@ node dist/cli.js pay-payment-link \
   --payment-link-id <id> \
   --wait
 ```
+
+Safer wallet private-key input paths for payment commands:
+
+- `--private-key-env <ENV_NAME>`
+- `--private-key-file <path>`
+
+Direct `--private-key` usage now requires `--allow-unsafe-private-key-argv`.
 
 ## Payment Behavior
 

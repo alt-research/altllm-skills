@@ -4,7 +4,11 @@ import {
   loadSession,
   resolveSessionBackedBaseUrl,
 } from "../lib/session.js";
-import { executeDirectPayment, resolvePrivateKey } from "../lib/wallet.js";
+import {
+  executeDirectPayment,
+  resolvePrivateKey,
+  validateUnsafePrivateKeyArgvUsage,
+} from "../lib/wallet.js";
 
 export interface TopupCryptoOptions {
   amount: number;
@@ -13,7 +17,9 @@ export interface TopupCryptoOptions {
   payCurrency?: string;
   autoPay?: boolean;
   privateKey?: string;
+  privateKeyFile?: string;
   privateKeyEnv: string;
+  allowUnsafePrivateKeyArgv?: boolean;
   sessionFile: string;
   wait?: boolean;
   pollIntervalSeconds: number;
@@ -176,6 +182,11 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
     throw new CliError("Amount must be >= 0.5 USD.");
   }
 
+  validateUnsafePrivateKeyArgvUsage({
+    explicit: options.privateKey,
+    allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+  });
+
   if (options.wait) {
     validatePaymentPollingOptions({
       pollIntervalSeconds: options.pollIntervalSeconds,
@@ -224,7 +235,12 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
       );
     }
 
-    const privateKey = resolvePrivateKey(options.privateKey, options.privateKeyEnv);
+    const privateKey = await resolvePrivateKey({
+      explicit: options.privateKey,
+      filePath: options.privateKeyFile,
+      envName: options.privateKeyEnv,
+      allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+    });
     const payment = await executeDirectPayment({
       privateKey,
       payAddress: created.pay_address,

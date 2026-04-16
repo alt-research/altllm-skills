@@ -4,7 +4,11 @@ import {
   loadSession,
   resolveSessionBackedBaseUrl,
 } from "../lib/session.js";
-import { executeDirectPayment, resolvePrivateKey } from "../lib/wallet.js";
+import {
+  executeDirectPayment,
+  resolvePrivateKey,
+  validateUnsafePrivateKeyArgvUsage,
+} from "../lib/wallet.js";
 import {
   fetchPaymentLinkStatus,
   formatPaymentLinkRecord,
@@ -18,7 +22,9 @@ export interface PayPaymentLinkOptions {
   baseUrl?: string;
   sessionFile: string;
   privateKey?: string;
+  privateKeyFile?: string;
   privateKeyEnv: string;
+  allowUnsafePrivateKeyArgv?: boolean;
   wait?: boolean;
   pollIntervalSeconds: number;
   timeoutSeconds: number;
@@ -26,6 +32,11 @@ export interface PayPaymentLinkOptions {
 }
 
 export async function payPaymentLink(options: PayPaymentLinkOptions): Promise<void> {
+  validateUnsafePrivateKeyArgvUsage({
+    explicit: options.privateKey,
+    allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+  });
+
   if (options.wait) {
     validatePaymentPollingOptions({
       pollIntervalSeconds: options.pollIntervalSeconds,
@@ -55,7 +66,12 @@ export async function payPaymentLink(options: PayPaymentLinkOptions): Promise<vo
     );
   }
 
-  const privateKey = resolvePrivateKey(options.privateKey, options.privateKeyEnv);
+  const privateKey = await resolvePrivateKey({
+    explicit: options.privateKey,
+    filePath: options.privateKeyFile,
+    envName: options.privateKeyEnv,
+    allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+  });
   const payment = await executeDirectPayment({
     privateKey,
     payAddress: link.pay_address,
