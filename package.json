@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alt-research/altllm-cli.git"
+    "url": "git+https://github.com/alt-research/altllm-skills.git"
   },
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/alt-research/altllm-cli/issues"
+    "url": "https://github.com/alt-research/altllm-skills/issues"
   },
-  "homepage": "https://github.com/alt-research/altllm-cli#readme",
+  "homepage": "https://github.com/alt-research/altllm-skills#readme",
   "bin": {
     "altllm": "dist/cli.js"
   },
