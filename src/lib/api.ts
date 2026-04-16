@@ -8,7 +8,33 @@ export class CliError extends Error {
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
 
 export function normalizeBaseUrl(baseUrl: string): string {
-  return baseUrl.replace(/\/+$/, "");
+  const normalized = baseUrl.replace(/\/+$/, "");
+
+  let parsed: URL;
+  try {
+    parsed = new URL(normalized);
+  } catch {
+    throw new CliError(`Invalid base URL: ${baseUrl}`);
+  }
+
+  const protocol = parsed.protocol.toLowerCase();
+  const hostname = parsed.hostname.toLowerCase();
+  const isLoopbackHost =
+    hostname === "localhost" ||
+    hostname === "::1" ||
+    /^127(?:\.\d{1,3}){3}$/.test(hostname);
+
+  if (protocol === "https:") {
+    return normalized;
+  }
+
+  if (protocol === "http:" && isLoopbackHost) {
+    return normalized;
+  }
+
+  throw new CliError(
+    `Insecure base URL not allowed for non-local hosts: ${normalized}. Use https:// for non-local targets.`
+  );
 }
 
 export function canonicalizeOrigin(baseUrl: string): string {

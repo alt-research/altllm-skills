@@ -14,3 +14,4 @@ These notes apply when using the Cloud Claw skills from this repository.
 4. Assume Cloud Claw and AltLLM share session semantics. For scriptable user workflows, prefer `portal-sso` rather than re-describing the browser OAuth flow.
 5. Do not default to internal build/image scripts unless the user explicitly asks for infra maintenance.
 6. Do not forward the saved Portal session token to an arbitrary Cloud Claw host by default. If a non-trusted `--cloud-claw-base-url` is truly intended, require an explicit override such as `--allow-cloud-claw-token-forwarding`.
+7. Non-local Cloud Claw base URLs must use `https://`. Only loopback local-development targets should use `http://`.

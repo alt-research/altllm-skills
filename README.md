@@ -61,7 +61,7 @@ Production default:
 
 - `https://platform-api.altllm.ai`
 
-Only use localhost when you are explicitly testing local Portal APIs.
+Only use `http://` for explicit local-development loopback targets such as `http://localhost` or `http://127.0.0.1`. Non-local base URLs must use `https://`.
 
 If a command is reusing your saved Portal session token, the CLI will refuse to send that token to a different `--base-url` host unless you also pass `--allow-token-host-mismatch`.
 
