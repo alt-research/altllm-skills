@@ -8,12 +8,14 @@ export interface UsageByKeyOptions {
   sessionFile: string;
   startDate?: string;
   endDate?: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function usageByKey(options: UsageByKeyOptions): Promise<void> {
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const searchParams = new URLSearchParams();

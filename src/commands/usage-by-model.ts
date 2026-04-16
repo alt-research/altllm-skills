@@ -9,12 +9,14 @@ export interface UsageByModelOptions {
   startDate?: string;
   endDate?: string;
   month?: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function usageByModel(options: UsageByModelOptions): Promise<void> {
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const searchParams = new URLSearchParams();

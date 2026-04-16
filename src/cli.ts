@@ -38,6 +38,8 @@ const DEFAULT_CLOUD_CLAW_BASE_URL =
   process.env.CLOUD_CLAW_BASE_URL || "https://claw.altllm.ai";
 const CLOUD_CLAW_TOKEN_FORWARDING_OPTION =
   "Allow forwarding the saved Portal session token to a non-default Cloud Claw base URL";
+const PORTAL_TOKEN_HOST_MISMATCH_OPTION =
+  "Allow sending the saved Portal session token to a non-session --base-url";
 
 function collectOptionValues(value: string, previous?: string[]): string[] {
   return [...(previous ?? []), value];
@@ -312,10 +314,12 @@ program
   .command("credit")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .action(async (options) => {
     await credit({
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
@@ -323,6 +327,7 @@ program
   .command("transactions")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .option("--page <number>", "Page number (1-indexed)")
   .option("--limit <number>", "Items per page (1-100)")
   .option("--type <type>", "Transaction type filter: all, credit, usage, or refund")
@@ -330,6 +335,7 @@ program
     await transactions({
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
       page: options.page === undefined ? undefined : Number(options.page),
       limit: options.limit === undefined ? undefined : Number(options.limit),
       type: options.type,
@@ -340,10 +346,12 @@ program
   .command("usage-summary")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .action(async (options) => {
     await usageSummary({
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
@@ -351,6 +359,7 @@ program
   .command("usage-timeline")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .option("--month <yyyy-mm>", "Month filter in YYYY-MM format")
   .option("--start-date <yyyy-mm-dd>", "Start date in YYYY-MM-DD format")
   .option("--end-date <yyyy-mm-dd>", "End date in YYYY-MM-DD format")
@@ -358,6 +367,7 @@ program
     await usageTimeline({
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
       month: options.month,
       startDate: options.startDate,
       endDate: options.endDate,
@@ -368,6 +378,7 @@ program
   .command("usage-by-model")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .option("--month <yyyy-mm>", "Month filter in YYYY-MM format")
   .option("--start-date <yyyy-mm-dd>", "Start date in YYYY-MM-DD format")
   .option("--end-date <yyyy-mm-dd>", "End date in YYYY-MM-DD format")
@@ -375,6 +386,7 @@ program
     await usageByModel({
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
       month: options.month,
       startDate: options.startDate,
       endDate: options.endDate,
@@ -385,12 +397,14 @@ program
   .command("usage-by-key")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .option("--start-date <yyyy-mm-dd>", "Start date in YYYY-MM-DD format")
   .option("--end-date <yyyy-mm-dd>", "End date in YYYY-MM-DD format")
   .action(async (options) => {
     await usageByKey({
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
       startDate: options.startDate,
       endDate: options.endDate,
     });
@@ -400,10 +414,12 @@ program
   .command("list-api-keys")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .action(async (options) => {
     await listApiKeys({
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
@@ -414,6 +430,7 @@ program
   .option("--models <ids>", "Comma-separated allowed model IDs")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .action(async (options) => {
     await createApiKey({
       name: options.name,
@@ -421,6 +438,7 @@ program
       models: options.models,
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
@@ -429,11 +447,13 @@ program
   .requiredOption("--key-id <id>", "API key ID")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .action(async (options) => {
     await getApiKey({
       keyId: options.keyId,
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
@@ -446,6 +466,7 @@ program
   .option("--models <ids>", "Comma-separated allowed model IDs")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .action(async (options) => {
     await updateApiKey({
       keyId: options.keyId,
@@ -455,6 +476,7 @@ program
       models: options.models,
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
@@ -463,11 +485,13 @@ program
   .requiredOption("--key-id <id>", "API key ID")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .action(async (options) => {
     await revokeApiKey({
       keyId: options.keyId,
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
@@ -476,11 +500,13 @@ program
   .requiredOption("--code <code>", "Promo code to redeem")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .action(async (options) => {
     await redeemPromo({
       code: options.code,
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
@@ -494,6 +520,7 @@ program
   .option("--private-key-env <name>", "Environment variable containing the private key", "ALTLLM_WALLET_PRIVATE_KEY")
   .option("--redirect-url <url>", "Optional redirect URL after payment")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .option("--wait", "Poll until the payment reaches a terminal state", false)
   .option("--poll-interval <seconds>", "Polling interval in seconds", "10")
   .option("--timeout <seconds>", "Maximum wait time in seconds", "600")
@@ -507,6 +534,7 @@ program
       privateKeyEnv: options.privateKeyEnv,
       redirectUrl: options.redirectUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
       wait: Boolean(options.wait),
       pollIntervalSeconds: parsePositiveNumberOption(
         options.pollInterval,
@@ -521,6 +549,7 @@ program
   .requiredOption("--payment-link-id <id>", "Payment link ID")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .option("--wait", "Poll until the payment reaches a terminal state", false)
   .option("--poll-interval <seconds>", "Polling interval in seconds", "10")
   .option("--timeout <seconds>", "Maximum wait time in seconds", "600")
@@ -529,6 +558,7 @@ program
       paymentLinkId: options.paymentLinkId,
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
       wait: Boolean(options.wait),
       pollIntervalSeconds: parsePositiveNumberOption(
         options.pollInterval,
@@ -543,6 +573,7 @@ program
   .requiredOption("--payment-link-id <id>", "Payment link ID")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .option("--private-key <hex>", "EVM private key for automatic payment")
   .option("--private-key-env <name>", "Environment variable containing the private key", "ALTLLM_WALLET_PRIVATE_KEY")
   .option("--wait", "Poll until the payment reaches a terminal state after broadcast", false)
@@ -553,6 +584,7 @@ program
       paymentLinkId: options.paymentLinkId,
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
       privateKey: options.privateKey,
       privateKeyEnv: options.privateKeyEnv,
       wait: Boolean(options.wait),

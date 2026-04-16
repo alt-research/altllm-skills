@@ -63,6 +63,8 @@ Production default:
 
 Only use localhost when you are explicitly testing local Portal APIs.
 
+If a command is reusing your saved Portal session token, the CLI will refuse to send that token to a different `--base-url` host unless you also pass `--allow-token-host-mismatch`.
+
 ## Install
 
 ```bash

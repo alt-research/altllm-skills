@@ -14,6 +14,7 @@ export interface CreateApiKeyOptions {
   model?: string[];
   baseUrl?: string;
   sessionFile: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function createApiKey(options: CreateApiKeyOptions): Promise<void> {
@@ -26,6 +27,7 @@ export async function createApiKey(options: CreateApiKeyOptions): Promise<void> 
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const result = await requestJson<CreateKeyResponse>({

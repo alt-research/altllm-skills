@@ -10,12 +10,14 @@ export interface RevokeApiKeyOptions {
   keyId: string;
   baseUrl?: string;
   sessionFile: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function revokeApiKey(options: RevokeApiKeyOptions): Promise<void> {
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const result = await requestJson<KeyDeletedResponse>({

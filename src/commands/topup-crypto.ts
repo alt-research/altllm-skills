@@ -1,5 +1,9 @@
 import { CliError, normalizeBaseUrl, requestJson } from "../lib/api.js";
-import { DEFAULT_SESSION_FILE, loadSession } from "../lib/session.js";
+import {
+  DEFAULT_SESSION_FILE,
+  loadSession,
+  resolveSessionBackedBaseUrl,
+} from "../lib/session.js";
 import { executeDirectPayment, resolvePrivateKey } from "../lib/wallet.js";
 
 export interface TopupCryptoOptions {
@@ -14,6 +18,7 @@ export interface TopupCryptoOptions {
   wait?: boolean;
   pollIntervalSeconds: number;
   timeoutSeconds: number;
+  allowTokenHostMismatch?: boolean;
 }
 
 interface CreatePaymentLinkResponse {
@@ -163,6 +168,7 @@ export interface PaymentStatusOptions {
   wait?: boolean;
   pollIntervalSeconds: number;
   timeoutSeconds: number;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
@@ -178,7 +184,13 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
   }
 
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
-  const baseUrl = normalizeBaseUrl(options.baseUrl || session.baseUrl);
+  const baseUrl = normalizeBaseUrl(
+    resolveSessionBackedBaseUrl({
+      sessionBaseUrl: session.baseUrl,
+      baseUrl: options.baseUrl,
+      allowTokenHostMismatch: options.allowTokenHostMismatch,
+    })
+  );
 
   const created = await requestJson<CreatePaymentLinkResponse>({
     method: "POST",
@@ -263,7 +275,13 @@ export async function paymentStatus(options: PaymentStatusOptions): Promise<void
   }
 
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
-  const baseUrl = normalizeBaseUrl(options.baseUrl || session.baseUrl);
+  const baseUrl = normalizeBaseUrl(
+    resolveSessionBackedBaseUrl({
+      sessionBaseUrl: session.baseUrl,
+      baseUrl: options.baseUrl,
+      allowTokenHostMismatch: options.allowTokenHostMismatch,
+    })
+  );
   const link = options.wait
     ? await waitForPaymentLinkSettlement({
         baseUrl,
