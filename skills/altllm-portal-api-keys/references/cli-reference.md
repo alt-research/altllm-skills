@@ -38,6 +38,11 @@ node dist/cli.js get-api-key \
   --key-id <id>
 ```
 
+Known production limitation:
+
+- The current production Portal backend rejects valid key IDs on single-key routes.
+- Expect `get-api-key`, `update-api-key`, and `revoke-api-key` to fail until the backend issue is fixed.
+
 ### Update key
 
 ```bash
@@ -60,4 +65,4 @@ node dist/cli.js revoke-api-key \
 ## Notes
 
 - Keys created through Portal are for the AltLLM OpenAI-compatible gateway at `https://api.altllm.ai/v1`.
-- `get-api-key` depends on the corresponding Portal API endpoint being healthy.
+- `get-api-key`, `update-api-key`, and `revoke-api-key` are currently blocked by a known production backend issue on the single-key Portal routes.
