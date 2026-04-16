@@ -1,8 +1,9 @@
 import { CliError, normalizeBaseUrl, requestJson } from "./api.js";
 import { DEFAULT_SESSION_FILE, loadSession } from "./session.js";
 
+export const TRUSTED_CLOUD_CLAW_BASE_URL = "https://claw.altllm.ai";
 export const DEFAULT_CLOUD_CLAW_BASE_URL =
-  process.env.CLOUD_CLAW_BASE_URL || "https://claw.altllm.ai";
+  process.env.CLOUD_CLAW_BASE_URL || TRUSTED_CLOUD_CLAW_BASE_URL;
 
 export const CLOUD_CLAW_AGENT_TYPES = ["openclaw", "picoclaw", "aintern"] as const;
 export type CloudClawAgentType = (typeof CLOUD_CLAW_AGENT_TYPES)[number];
@@ -16,14 +17,16 @@ function ensureCloudClawBaseUrlAllowed(params: {
   allowTokenForwarding?: boolean;
 }): void {
   const normalizedBaseUrl = normalizeCloudClawBaseUrl(params.baseUrl);
-  const normalizedDefaultBaseUrl = normalizeCloudClawBaseUrl(DEFAULT_CLOUD_CLAW_BASE_URL);
+  const normalizedTrustedBaseUrl = normalizeCloudClawBaseUrl(
+    TRUSTED_CLOUD_CLAW_BASE_URL
+  );
 
   if (
-    normalizedBaseUrl !== normalizedDefaultBaseUrl &&
+    normalizedBaseUrl !== normalizedTrustedBaseUrl &&
     !params.allowTokenForwarding
   ) {
     throw new CliError(
-      `Refusing to forward the saved Portal session token to non-default Cloud Claw base URL ${normalizedBaseUrl}. Re-run with --allow-cloud-claw-token-forwarding if you trust this host.`
+      `Refusing to forward the saved Portal session token to non-trusted Cloud Claw base URL ${normalizedBaseUrl}. The trusted default is ${normalizedTrustedBaseUrl}. Re-run with --allow-cloud-claw-token-forwarding if you trust this host.`
     );
   }
 }
