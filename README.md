@@ -1,6 +1,8 @@
-# AltLLM Skills
+# AltLLM CLI
 
 TypeScript CLI and repo-local agent skills for AltLLM Portal operations.
+
+If you want a task-oriented guide for what an agent can do with these skills, start with [GUIDE.md](./GUIDE.md).
 
 ## Introduction
 
@@ -140,7 +142,8 @@ Launch a new PicoClaw:
 node dist/cli.js cloud-claw-deploy \
   --name swift-owl-9 \
   --agent-type picoclaw \
-  --telegram-bot-token 123456789:ABC...
+  --telegram-bot-token 123456789:ABC... \
+  --telegram-allowed-users 123456789
 ```
 
 Launch a new OpenClaw:
@@ -150,8 +153,14 @@ node dist/cli.js cloud-claw-deploy \
   --name happy-fox-12 \
   --agent-type openclaw \
   --model altllm/altllm-standard \
-  --telegram-bot-token 123456789:ABC...
+  --telegram-bot-token 123456789:ABC... \
+  --telegram-allowed-users 123456789
 ```
+
+For Telegram-backed deployments:
+
+- `--telegram-bot-token` is required for `picoclaw` and `aintern`
+- omitting `--telegram-allowed-users` on `picoclaw` or `aintern` allows everyone to message the bot
 
 Manage an existing VM:
 
@@ -344,7 +353,7 @@ node dist/cli.js transactions \
   --type usage
 ```
 
-View usage summary for the current billing period:
+View usage summary for the current calendar month:
 
 ```bash
 node dist/cli.js usage-summary \
@@ -425,7 +434,7 @@ node dist/cli.js pay-payment-link \
 - `pay-payment-link --wait` prints one final JSON document.
 - The CLI does not silently downgrade from direct payment mode to hosted checkout mode.
 - Terminal payment-link statuses such as `completed`, `expired`, `failed`, and `deactivated` are rejected before direct payment is sent.
-- Payment-link lookup paginates `GET /api/billing/payment-links` using `limit` and `offset`.
+- Payment-link lookup currently scans the most recent `100` Portal payment links via `GET /api/billing/payment-links?limit=100`.
 
 Supported direct-payment currencies:
 
