@@ -4,7 +4,11 @@ import {
   loadSession,
   resolveSessionBackedBaseUrl,
 } from "../lib/session.js";
-import { executeDirectPayment, resolvePrivateKey } from "../lib/wallet.js";
+import {
+  executeDirectPayment,
+  resolvePrivateKey,
+  validateUnsafePrivateKeyArgvUsage,
+} from "../lib/wallet.js";
 import {
   fetchPaymentLinkStatus,
   formatPaymentLinkRecord,
@@ -28,6 +32,11 @@ export interface PayPaymentLinkOptions {
 }
 
 export async function payPaymentLink(options: PayPaymentLinkOptions): Promise<void> {
+  validateUnsafePrivateKeyArgvUsage({
+    explicit: options.privateKey,
+    allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+  });
+
   if (options.wait) {
     validatePaymentPollingOptions({
       pollIntervalSeconds: options.pollIntervalSeconds,
