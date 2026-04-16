@@ -30,6 +30,7 @@ import { usageByKey } from "./commands/usage-by-key.js";
 import { usageByModel } from "./commands/usage-by-model.js";
 import { usageSummary } from "./commands/usage-summary.js";
 import { usageTimeline } from "./commands/usage-timeline.js";
+import { CliError } from "./lib/api.js";
 import { DEFAULT_SESSION_FILE } from "./lib/session.js";
 
 const program = new Command();
@@ -38,6 +39,15 @@ const DEFAULT_CLOUD_CLAW_BASE_URL =
 
 function collectOptionValues(value: string, previous?: string[]): string[] {
   return [...(previous ?? []), value];
+}
+
+function parsePositiveIntegerOption(value: string, optionName: string): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || !Number.isInteger(parsed) || parsed <= 0) {
+    throw new CliError(`${optionName} must be a positive integer.`);
+  }
+
+  return parsed;
 }
 
 program
@@ -65,7 +75,7 @@ program
       walletAddress: options.walletAddress,
       privateKey: options.privateKey,
       privateKeyEnv: options.privateKeyEnv,
-      chainId: Number(options.chainId),
+      chainId: parsePositiveIntegerOption(options.chainId, "--chain-id"),
       prepare: Boolean(options.prepare),
       nonce: options.nonce,
       signature: options.signature,
