@@ -133,10 +133,16 @@ program
   .requiredOption("--agent-type <type>", "Agent type: openclaw, picoclaw, or aintern")
   .option("--model <model>", "OpenClaw model, for example altllm/altllm-standard")
   .option("--telegram-bot-token <token>", "Telegram bot token for PicoClaw or Ottie")
+  .option("--telegram-bot-token-env <name>", "Environment variable containing the Telegram bot token")
+  .option("--telegram-bot-token-file <path>", "File containing the Telegram bot token")
   .option("--telegram-allowed-users <ids>", "Comma-separated numeric Telegram user IDs")
   .option("--altllm-api-key <key>", "Optional explicit AltLLM API key override")
+  .option("--altllm-api-key-env <name>", "Environment variable containing the AltLLM API key override")
+  .option("--altllm-api-key-file <path>", "File containing the AltLLM API key override")
   .option("--altllm-api-base <url>", "Optional explicit AltLLM API base override")
   .option("--anthropic-api-key <key>", "Optional Anthropic API key override")
+  .option("--anthropic-api-key-env <name>", "Environment variable containing the Anthropic API key")
+  .option("--anthropic-api-key-file <path>", "File containing the Anthropic API key")
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
@@ -146,10 +152,16 @@ program
       agentType: options.agentType,
       model: options.model,
       telegramBotToken: options.telegramBotToken,
+      telegramBotTokenEnv: options.telegramBotTokenEnv,
+      telegramBotTokenFile: options.telegramBotTokenFile,
       telegramAllowedUsers: options.telegramAllowedUsers,
       altllmApiKey: options.altllmApiKey,
+      altllmApiKeyEnv: options.altllmApiKeyEnv,
+      altllmApiKeyFile: options.altllmApiKeyFile,
       altllmApiBase: options.altllmApiBase,
       anthropicApiKey: options.anthropicApiKey,
+      anthropicApiKeyEnv: options.anthropicApiKeyEnv,
+      anthropicApiKeyFile: options.anthropicApiKeyFile,
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),

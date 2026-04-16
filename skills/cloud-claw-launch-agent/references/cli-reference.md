@@ -22,33 +22,49 @@ Important fields:
 ## Launch OpenClaw
 
 ```bash
+TELEGRAM_BOT_TOKEN=123456789:ABC... \
 node dist/cli.js cloud-claw-deploy \
   --name happy-fox-12 \
   --agent-type openclaw \
   --model altllm/altllm-standard \
-  --telegram-bot-token 123456789:ABC... \
+  --telegram-bot-token-env TELEGRAM_BOT_TOKEN \
   --telegram-allowed-users 123456789
 ```
 
 ## Launch PicoClaw
 
 ```bash
+TELEGRAM_BOT_TOKEN=123456789:ABC... \
 node dist/cli.js cloud-claw-deploy \
   --name swift-panda-58 \
   --agent-type picoclaw \
-  --telegram-bot-token 123456789:ABC... \
+  --telegram-bot-token-env TELEGRAM_BOT_TOKEN \
   --telegram-allowed-users 123456789
 ```
 
 ## Launch Ottie
 
 ```bash
+TELEGRAM_BOT_TOKEN=123456789:ABC... \
 node dist/cli.js cloud-claw-deploy \
   --name brave-owl-14 \
   --agent-type aintern \
-  --telegram-bot-token 123456789:ABC... \
+  --telegram-bot-token-env TELEGRAM_BOT_TOKEN \
   --telegram-allowed-users 123456789
 ```
+
+## Secret Input Options
+
+For deployment secrets, the CLI supports:
+
+- direct flags such as `--telegram-bot-token`
+- environment-variable selectors such as `--telegram-bot-token-env TELEGRAM_BOT_TOKEN`
+- file selectors such as `--telegram-bot-token-file /path/to/token.txt`
+
+The same pattern also applies to:
+
+- `--altllm-api-key`
+- `--anthropic-api-key`
 
 ## Representative success response
 
