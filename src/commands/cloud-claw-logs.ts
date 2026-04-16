@@ -7,6 +7,7 @@ export interface CloudClawLogsOptions {
   baseUrl?: string;
   sessionFile: string;
   forceSso?: boolean;
+  allowTokenForwarding?: boolean;
   stream?: boolean;
 }
 
@@ -16,6 +17,7 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
     baseUrl: options.baseUrl || DEFAULT_CLOUD_CLAW_BASE_URL,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     force: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   if (!options.stream) {
