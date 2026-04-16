@@ -50,6 +50,15 @@ function parsePositiveIntegerOption(value: string, optionName: string): number {
   return parsed;
 }
 
+function parsePositiveNumberOption(value: string, optionName: string): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new CliError(`${optionName} must be a positive number.`);
+  }
+
+  return parsed;
+}
+
 program
   .name("altllm")
   .description("CLI for AltLLM Portal auth, API key management, billing, and payments");
@@ -475,8 +484,11 @@ program
       redirectUrl: options.redirectUrl,
       sessionFile: options.sessionFile,
       wait: Boolean(options.wait),
-      pollIntervalSeconds: Number(options.pollInterval),
-      timeoutSeconds: Number(options.timeout),
+      pollIntervalSeconds: parsePositiveNumberOption(
+        options.pollInterval,
+        "--poll-interval"
+      ),
+      timeoutSeconds: parsePositiveNumberOption(options.timeout, "--timeout"),
     });
   });
 
@@ -494,8 +506,11 @@ program
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
       wait: Boolean(options.wait),
-      pollIntervalSeconds: Number(options.pollInterval),
-      timeoutSeconds: Number(options.timeout),
+      pollIntervalSeconds: parsePositiveNumberOption(
+        options.pollInterval,
+        "--poll-interval"
+      ),
+      timeoutSeconds: parsePositiveNumberOption(options.timeout, "--timeout"),
     });
   });
 
@@ -517,8 +532,11 @@ program
       privateKey: options.privateKey,
       privateKeyEnv: options.privateKeyEnv,
       wait: Boolean(options.wait),
-      pollIntervalSeconds: Number(options.pollInterval),
-      timeoutSeconds: Number(options.timeout),
+      pollIntervalSeconds: parsePositiveNumberOption(
+        options.pollInterval,
+        "--poll-interval"
+      ),
+      timeoutSeconds: parsePositiveNumberOption(options.timeout, "--timeout"),
     });
   });
 
