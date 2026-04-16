@@ -233,6 +233,8 @@ Notes:
 
 - The CLI no longer assumes it must hold the user's private key.
 - External signers such as Privy are supported as long as they can sign the challenge message and return the wallet signature.
+- Local auto-signing now validates that the returned challenge matches the requested wallet, chain, and expected AltLLM login message shape before signing.
+- Automatic local signing is only allowed for the default production Portal API or loopback hosts. For other hosts, use `--prepare` and sign externally.
 - The current Portal backend still validates EVM addresses and Ethereum-style signatures.
 - If you run `login-wallet` without a local private key or `--signature`, it now returns a challenge payload instead of failing immediately.
 
