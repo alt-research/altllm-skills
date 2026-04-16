@@ -118,7 +118,9 @@ export function validateTelegramAllowedUsers(value?: string): string | undefined
 
   const trimmed = value.trim();
   if (!trimmed) {
-    return undefined;
+    throw new CliError(
+      "Telegram allowed users cannot be empty when provided. Omit --telegram-allowed-users to allow everyone."
+    );
   }
 
   if (!/^(\s*\d+\s*,)*\s*\d+\s*$/.test(trimmed)) {

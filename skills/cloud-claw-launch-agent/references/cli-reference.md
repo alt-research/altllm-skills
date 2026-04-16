@@ -40,6 +40,8 @@ node dist/cli.js cloud-claw-deploy \
   --telegram-allowed-users 123456789
 ```
 
+Omit `--telegram-allowed-users` only when you intentionally want a public bot. An explicitly empty value is rejected.
+
 ## Launch Ottie
 
 ```bash

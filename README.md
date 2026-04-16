@@ -163,6 +163,7 @@ For Telegram-backed deployments:
 
 - `--telegram-bot-token` is required for `picoclaw` and `aintern`
 - omitting `--telegram-allowed-users` on `picoclaw` or `aintern` allows everyone to message the bot
+- passing `--telegram-allowed-users ""` is rejected; use omission, not an empty string, for public bot behavior
 
 Manage an existing VM:
 
