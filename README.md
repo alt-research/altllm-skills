@@ -124,6 +124,8 @@ Inspect Cloud Claw user state:
 node dist/cli.js cloud-claw-me
 ```
 
+If you intentionally point Cloud Claw commands at a non-default host with `--cloud-claw-base-url`, also pass `--allow-cloud-claw-token-forwarding`. Without that explicit override, the CLI will refuse to POST your saved Portal session token to that host.
+
 List deployments:
 
 ```bash

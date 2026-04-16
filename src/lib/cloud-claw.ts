@@ -11,15 +11,38 @@ function normalizeCloudClawBaseUrl(baseUrl: string): string {
   return normalizeBaseUrl(baseUrl);
 }
 
+function ensureCloudClawBaseUrlAllowed(params: {
+  baseUrl: string;
+  allowTokenForwarding?: boolean;
+}): void {
+  const normalizedBaseUrl = normalizeCloudClawBaseUrl(params.baseUrl);
+  const normalizedDefaultBaseUrl = normalizeCloudClawBaseUrl(DEFAULT_CLOUD_CLAW_BASE_URL);
+
+  if (
+    normalizedBaseUrl !== normalizedDefaultBaseUrl &&
+    !params.allowTokenForwarding
+  ) {
+    throw new CliError(
+      `Refusing to forward the saved Portal session token to non-default Cloud Claw base URL ${normalizedBaseUrl}. Re-run with --allow-cloud-claw-token-forwarding if you trust this host.`
+    );
+  }
+}
+
 export async function getCloudClawJwt(params: {
   baseUrl?: string;
   sessionFile: string;
   force?: boolean;
+  allowTokenForwarding?: boolean;
 }): Promise<{ baseUrl: string; jwt: string }> {
-  const session = await loadSession(params.sessionFile || DEFAULT_SESSION_FILE);
   const baseUrl = normalizeCloudClawBaseUrl(
     params.baseUrl || DEFAULT_CLOUD_CLAW_BASE_URL
   );
+  ensureCloudClawBaseUrlAllowed({
+    baseUrl,
+    allowTokenForwarding: params.allowTokenForwarding,
+  });
+
+  const session = await loadSession(params.sessionFile || DEFAULT_SESSION_FILE);
 
   const sso = await requestJson<{ authenticated?: boolean; token?: string }>({
     method: "POST",
@@ -44,11 +67,13 @@ export async function requestCloudClawJson<T>(params: {
   baseUrl?: string;
   sessionFile: string;
   forceSso?: boolean;
+  allowTokenForwarding?: boolean;
 }): Promise<T> {
   const { baseUrl, jwt } = await getCloudClawJwt({
     baseUrl: params.baseUrl,
     sessionFile: params.sessionFile,
     force: params.forceSso,
+    allowTokenForwarding: params.allowTokenForwarding,
   });
 
   return requestJson<T>({

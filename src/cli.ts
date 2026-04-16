@@ -35,6 +35,8 @@ import { DEFAULT_SESSION_FILE } from "./lib/session.js";
 const program = new Command();
 const DEFAULT_CLOUD_CLAW_BASE_URL =
   process.env.CLOUD_CLAW_BASE_URL || "https://claw.altllm.ai";
+const CLOUD_CLAW_TOKEN_FORWARDING_OPTION =
+  "Allow forwarding the saved Portal session token to a non-default Cloud Claw base URL";
 
 function collectOptionValues(value: string, previous?: string[]): string[] {
   return [...(previous ?? []), value];
@@ -87,11 +89,13 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawMe({
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -100,6 +104,7 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .option("--include-all", "List all deployments in admin mode", false)
   .option("--include-user-info", "Include user info when listing all deployments", false)
   .action(async (options) => {
@@ -107,6 +112,7 @@ program
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
       includeAll: Boolean(options.includeAll),
       includeUserInfo: Boolean(options.includeUserInfo),
     });
@@ -118,12 +124,14 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawDeployment({
       name: options.name,
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -140,6 +148,7 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawDeploy({
       name: options.name,
@@ -153,6 +162,7 @@ program
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -162,12 +172,14 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawStart({
       name: options.name,
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -177,12 +189,14 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawStop({
       name: options.name,
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -192,12 +206,14 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawRestart({
       name: options.name,
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -207,12 +223,14 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawRenew({
       name: options.name,
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -223,6 +241,7 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawAutoRenew({
       name: options.name,
@@ -230,6 +249,7 @@ program
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -239,12 +259,14 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .action(async (options) => {
     await cloudClawDelete({
       name: options.name,
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
     });
   });
 
@@ -254,6 +276,7 @@ program
   .option("--cloud-claw-base-url <url>", "Cloud Claw base URL", DEFAULT_CLOUD_CLAW_BASE_URL)
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--force-sso", "Force Cloud Claw to refresh portal-sso linkage", false)
+  .option("--allow-cloud-claw-token-forwarding", CLOUD_CLAW_TOKEN_FORWARDING_OPTION, false)
   .option("--stream", "Stream logs via SSE", false)
   .action(async (options) => {
     await cloudClawLogs({
@@ -261,6 +284,7 @@ program
       baseUrl: options.cloudClawBaseUrl,
       sessionFile: options.sessionFile,
       forceSso: Boolean(options.forceSso),
+      allowTokenForwarding: Boolean(options.allowCloudClawTokenForwarding),
       stream: Boolean(options.stream),
     });
   });

@@ -6,6 +6,7 @@ export interface CloudClawLifecycleOptions {
   baseUrl?: string;
   sessionFile: string;
   forceSso?: boolean;
+  allowTokenForwarding?: boolean;
 }
 
 export interface CloudClawAutoRenewOptions extends CloudClawLifecycleOptions {
@@ -22,6 +23,7 @@ async function postLifecycle(
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     forceSso: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   writeJson(result);
@@ -46,6 +48,7 @@ export async function cloudClawDelete(options: CloudClawLifecycleOptions): Promi
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     forceSso: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   writeJson(result);
@@ -59,6 +62,7 @@ export async function cloudClawRestart(options: CloudClawLifecycleOptions): Prom
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     forceSso: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   const result = await requestCloudClawJson<Record<string, unknown>>({
@@ -67,6 +71,7 @@ export async function cloudClawRestart(options: CloudClawLifecycleOptions): Prom
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     forceSso: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   writeJson({
@@ -87,6 +92,7 @@ export async function cloudClawAutoRenew(
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     forceSso: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   writeJson(result);
