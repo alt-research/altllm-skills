@@ -5,6 +5,7 @@ import {
   fetchPaymentLinkStatus,
   formatPaymentLinkRecord,
   isTerminalPaymentLinkStatus,
+  validatePaymentPollingOptions,
   waitForPaymentLinkSettlement,
 } from "./topup-crypto.js";
 
@@ -20,6 +21,13 @@ export interface PayPaymentLinkOptions {
 }
 
 export async function payPaymentLink(options: PayPaymentLinkOptions): Promise<void> {
+  if (options.wait) {
+    validatePaymentPollingOptions({
+      pollIntervalSeconds: options.pollIntervalSeconds,
+      timeoutSeconds: options.timeoutSeconds,
+    });
+  }
+
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
   const baseUrl = normalizeBaseUrl(options.baseUrl || session.baseUrl);
   const link = await fetchPaymentLinkStatus(baseUrl, session.token, options.paymentLinkId);

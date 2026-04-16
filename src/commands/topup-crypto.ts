@@ -56,6 +56,19 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export function validatePaymentPollingOptions(params: {
+  pollIntervalSeconds: number;
+  timeoutSeconds: number;
+}): void {
+  if (!Number.isFinite(params.pollIntervalSeconds) || params.pollIntervalSeconds <= 0) {
+    throw new CliError("Polling interval must be a positive number of seconds.");
+  }
+
+  if (!Number.isFinite(params.timeoutSeconds) || params.timeoutSeconds <= 0) {
+    throw new CliError("Timeout must be a positive number of seconds.");
+  }
+}
+
 export async function fetchPaymentLinkStatus(
   baseUrl: string,
   token: string,
@@ -116,6 +129,11 @@ export async function waitForPaymentLinkSettlement(params: {
   pollIntervalSeconds: number;
   timeoutSeconds: number;
 }): Promise<PaymentLinkRecord> {
+  validatePaymentPollingOptions({
+    pollIntervalSeconds: params.pollIntervalSeconds,
+    timeoutSeconds: params.timeoutSeconds,
+  });
+
   const startedAt = Date.now();
 
   while (true) {
@@ -150,6 +168,13 @@ export interface PaymentStatusOptions {
 export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
   if (!Number.isFinite(options.amount) || options.amount < 0.5) {
     throw new CliError("Amount must be >= 0.5 USD.");
+  }
+
+  if (options.wait) {
+    validatePaymentPollingOptions({
+      pollIntervalSeconds: options.pollIntervalSeconds,
+      timeoutSeconds: options.timeoutSeconds,
+    });
   }
 
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
@@ -230,6 +255,13 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
 }
 
 export async function paymentStatus(options: PaymentStatusOptions): Promise<void> {
+  if (options.wait) {
+    validatePaymentPollingOptions({
+      pollIntervalSeconds: options.pollIntervalSeconds,
+      timeoutSeconds: options.timeoutSeconds,
+    });
+  }
+
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
   const baseUrl = normalizeBaseUrl(options.baseUrl || session.baseUrl);
   const link = options.wait
