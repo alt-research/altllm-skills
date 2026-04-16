@@ -2,7 +2,7 @@ import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { homedir } from "node:os";
 
-import { CliError } from "./api.js";
+import { CliError, normalizeBaseUrl } from "./api.js";
 
 export interface PortalSession {
   baseUrl: string;
@@ -15,6 +15,28 @@ export interface PortalSession {
 }
 
 export const DEFAULT_SESSION_FILE = `${homedir()}/.altllm/portal-cli-session.json`;
+
+export function resolveSessionBackedBaseUrl(params: {
+  sessionBaseUrl: string;
+  baseUrl?: string;
+  allowTokenHostMismatch?: boolean;
+}): string {
+  const normalizedSessionBaseUrl = normalizeBaseUrl(params.sessionBaseUrl);
+  const normalizedBaseUrl = normalizeBaseUrl(
+    params.baseUrl || params.sessionBaseUrl
+  );
+
+  if (
+    normalizedBaseUrl !== normalizedSessionBaseUrl &&
+    !params.allowTokenHostMismatch
+  ) {
+    throw new CliError(
+      `Refusing to send the saved Portal session token to non-session base URL ${normalizedBaseUrl}. Session origin is ${normalizedSessionBaseUrl}. Re-run with --allow-token-host-mismatch if you trust this host.`
+    );
+  }
+
+  return normalizedBaseUrl;
+}
 
 export async function saveSession(path: string, session: PortalSession): Promise<void> {
   await mkdir(dirname(path), { recursive: true });

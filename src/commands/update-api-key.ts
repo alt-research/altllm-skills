@@ -17,6 +17,7 @@ export interface UpdateApiKeyOptions {
   model?: string[];
   baseUrl?: string;
   sessionFile: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function updateApiKey(options: UpdateApiKeyOptions): Promise<void> {
@@ -51,6 +52,7 @@ export async function updateApiKey(options: UpdateApiKeyOptions): Promise<void> 
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const result = await requestJson<KeyDetail>({

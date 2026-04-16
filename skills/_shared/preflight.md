@@ -15,3 +15,4 @@ Use these rules before the first `altllm` command in a fresh checkout or after c
 5. Treat `~/.altllm/portal-cli-session.json` as sensitive local state.
 6. Do not print private keys or full API keys except when the command intentionally returns a newly created key.
 7. If the task touches a live command, run a real check against the intended environment when practical.
+8. Do not forward a saved Portal session token to a different `--base-url` host by default. Require an explicit override such as `--allow-token-host-mismatch` when that mismatch is truly intended.
