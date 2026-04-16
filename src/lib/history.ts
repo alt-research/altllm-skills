@@ -51,6 +51,43 @@ export function appendDateRangeParams(
   }
 }
 
+export function appendMonthOrDateRangeParams(
+  searchParams: URLSearchParams,
+  params: { startDate?: string; endDate?: string; month?: string }
+): void {
+  const hasMonth = params.month !== undefined;
+  const hasStartDate = params.startDate !== undefined;
+  const hasEndDate = params.endDate !== undefined;
+
+  if (hasMonth && (hasStartDate || hasEndDate)) {
+    throw new CliError("Use either --month or --start-date/--end-date, but not both.");
+  }
+
+  if (hasStartDate !== hasEndDate) {
+    throw new CliError("Provide both --start-date and --end-date for an explicit date range.");
+  }
+
+  appendDateRangeParams(searchParams, params);
+}
+
+export function appendRequiredDateRangeParams(
+  searchParams: URLSearchParams,
+  params: { startDate?: string; endDate?: string }
+): void {
+  const hasStartDate = params.startDate !== undefined;
+  const hasEndDate = params.endDate !== undefined;
+
+  if (!hasStartDate && !hasEndDate) {
+    throw new CliError("Provide both --start-date and --end-date.");
+  }
+
+  if (hasStartDate !== hasEndDate) {
+    throw new CliError("Provide both --start-date and --end-date.");
+  }
+
+  appendDateRangeParams(searchParams, params);
+}
+
 export function parseTransactionFilterType(type: string): TransactionFilterType {
   const normalized = type.trim().toLowerCase();
   if ((TRANSACTION_FILTER_TYPES as readonly string[]).includes(normalized)) {

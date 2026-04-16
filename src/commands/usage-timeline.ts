@@ -1,5 +1,5 @@
 import { requestJson } from "../lib/api.js";
-import { appendDateRangeParams } from "../lib/history.js";
+import { appendMonthOrDateRangeParams } from "../lib/history.js";
 import { resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -20,7 +20,7 @@ export async function usageTimeline(options: UsageTimelineOptions): Promise<void
   });
 
   const searchParams = new URLSearchParams();
-  appendDateRangeParams(searchParams, {
+  appendMonthOrDateRangeParams(searchParams, {
     startDate: options.startDate,
     endDate: options.endDate,
     month: options.month,

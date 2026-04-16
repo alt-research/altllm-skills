@@ -1,5 +1,5 @@
 import { requestJson } from "../lib/api.js";
-import { appendDateRangeParams } from "../lib/history.js";
+import { appendRequiredDateRangeParams } from "../lib/history.js";
 import { resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -19,7 +19,7 @@ export async function usageByKey(options: UsageByKeyOptions): Promise<void> {
   });
 
   const searchParams = new URLSearchParams();
-  appendDateRangeParams(searchParams, {
+  appendRequiredDateRangeParams(searchParams, {
     startDate: options.startDate,
     endDate: options.endDate,
   });
