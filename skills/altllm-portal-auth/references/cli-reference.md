@@ -25,6 +25,13 @@ Representative stdout:
 }
 ```
 
+Safer key input paths:
+
+- `--private-key-env <ENV_NAME>`
+- `--private-key-file <path>`
+
+Direct `--private-key` usage now requires `--allow-unsafe-private-key-argv`.
+
 ### Prepare challenge for external signing
 
 ```bash
@@ -66,6 +73,7 @@ node dist/cli.js login-wallet \
 - External signers such as Privy work if they can sign the returned challenge message for the supplied wallet address.
 - Local auto-signing validates the returned challenge before signing it.
 - For non-default, non-loopback API hosts, use `--prepare` and sign externally.
+- Safer local private-key input paths are `--private-key-env` and `--private-key-file`.
 - The current backend rejects non-EVM address formats.
 - Signature validation is Ethereum-style message recovery on the server.
 

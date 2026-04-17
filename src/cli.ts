@@ -40,6 +40,8 @@ const CLOUD_CLAW_TOKEN_FORWARDING_OPTION =
   "Allow forwarding the saved Portal session token to a non-default Cloud Claw base URL";
 const PORTAL_TOKEN_HOST_MISMATCH_OPTION =
   "Allow sending the saved Portal session token to a non-session --base-url";
+const UNSAFE_PRIVATE_KEY_ARGV_OPTION =
+  "Allow reading the wallet private key directly from --private-key (unsafe: leaks via argv)";
 
 function collectOptionValues(value: string, previous?: string[]): string[] {
   return [...(previous ?? []), value];
@@ -88,7 +90,9 @@ program
     process.env.ALTLLM_PORTAL_API_URL || "https://platform-api.altllm.ai"
   )
   .option("--private-key <hex>", "EVM private key for local signing")
+  .option("--private-key-file <path>", "File containing the private key for local signing")
   .option("--private-key-env <name>", "Environment variable containing the private key for local signing", "ALTLLM_WALLET_PRIVATE_KEY")
+  .option("--allow-unsafe-private-key-argv", UNSAFE_PRIVATE_KEY_ARGV_OPTION, false)
   .option("--chain-id <number>", "Chain ID for the login challenge", "1")
   .option("--prepare", "Fetch a wallet challenge for an external signer such as Privy", false)
   .option("--nonce <value>", "Existing challenge nonce for external-signature login")
@@ -99,7 +103,9 @@ program
       baseUrl: options.baseUrl,
       walletAddress: options.walletAddress,
       privateKey: options.privateKey,
+      privateKeyFile: options.privateKeyFile,
       privateKeyEnv: options.privateKeyEnv,
+      allowUnsafePrivateKeyArgv: Boolean(options.allowUnsafePrivateKeyArgv),
       chainId: parsePositiveIntegerOption(options.chainId, "--chain-id"),
       prepare: Boolean(options.prepare),
       nonce: options.nonce,
@@ -541,7 +547,9 @@ program
   .option("--pay-currency <ticker>", "NOWPayments pay_currency for direct payment mode")
   .option("--auto-pay", "Automatically send the on-chain payment from the local wallet", false)
   .option("--private-key <hex>", "EVM private key for automatic payment")
+  .option("--private-key-file <path>", "File containing the private key for automatic payment")
   .option("--private-key-env <name>", "Environment variable containing the private key", "ALTLLM_WALLET_PRIVATE_KEY")
+  .option("--allow-unsafe-private-key-argv", UNSAFE_PRIVATE_KEY_ARGV_OPTION, false)
   .option("--redirect-url <url>", "Optional redirect URL after payment")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
@@ -555,7 +563,9 @@ program
       payCurrency: options.payCurrency,
       autoPay: Boolean(options.autoPay),
       privateKey: options.privateKey,
+      privateKeyFile: options.privateKeyFile,
       privateKeyEnv: options.privateKeyEnv,
+      allowUnsafePrivateKeyArgv: Boolean(options.allowUnsafePrivateKeyArgv),
       redirectUrl: options.redirectUrl,
       sessionFile: options.sessionFile,
       allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
@@ -599,7 +609,9 @@ program
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
   .option("--private-key <hex>", "EVM private key for automatic payment")
+  .option("--private-key-file <path>", "File containing the private key for automatic payment")
   .option("--private-key-env <name>", "Environment variable containing the private key", "ALTLLM_WALLET_PRIVATE_KEY")
+  .option("--allow-unsafe-private-key-argv", UNSAFE_PRIVATE_KEY_ARGV_OPTION, false)
   .option("--wait", "Poll until the payment reaches a terminal state after broadcast", false)
   .option("--poll-interval <seconds>", "Polling interval in seconds", "10")
   .option("--timeout <seconds>", "Maximum wait time in seconds", "600")
@@ -610,7 +622,9 @@ program
       sessionFile: options.sessionFile,
       allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
       privateKey: options.privateKey,
+      privateKeyFile: options.privateKeyFile,
       privateKeyEnv: options.privateKeyEnv,
+      allowUnsafePrivateKeyArgv: Boolean(options.allowUnsafePrivateKeyArgv),
       wait: Boolean(options.wait),
       pollIntervalSeconds: parsePositiveNumberOption(
         options.pollInterval,

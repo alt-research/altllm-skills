@@ -11,20 +11,76 @@ import {
 } from "viem";
 import { base, mainnet } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
+import { readFile } from "node:fs/promises";
 
 import { CliError } from "./api.js";
 
-export function resolvePrivateKey(explicit?: string, envName = "ALTLLM_WALLET_PRIVATE_KEY"): `0x${string}` {
-  const candidate = (explicit ?? process.env[envName] ?? "").trim();
-  if (!candidate) {
-    throw new CliError(`Private key missing. Provide --private-key or set ${envName}.`);
+function normalizePrivateKey(candidate: string): `0x${string}` {
+  const trimmed = candidate.trim();
+  if (!trimmed) {
+    throw new CliError("Private key cannot be empty.");
   }
 
-  const normalized = candidate.startsWith("0x") ? candidate : `0x${candidate}`;
+  const normalized = trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`;
   if (!/^0x[a-fA-F0-9]{64}$/.test(normalized)) {
     throw new CliError("Private key must be a 32-byte hex string.");
   }
   return normalized as `0x${string}`;
+}
+
+export function validateUnsafePrivateKeyArgvUsage(params: {
+  explicit?: string;
+  allowUnsafeArgv?: boolean;
+}): void {
+  if (params.explicit !== undefined && !params.allowUnsafeArgv) {
+    throw new CliError(
+      "Refusing to read wallet private key directly from --private-key without --allow-unsafe-private-key-argv. Use --private-key-env or --private-key-file instead."
+    );
+  }
+}
+
+export async function resolvePrivateKey(params: {
+  explicit?: string;
+  filePath?: string;
+  envName?: string;
+  allowUnsafeArgv?: boolean;
+}): Promise<`0x${string}`> {
+  validateUnsafePrivateKeyArgvUsage({
+    explicit: params.explicit,
+    allowUnsafeArgv: params.allowUnsafeArgv,
+  });
+
+  const envName = params.envName || "ALTLLM_WALLET_PRIVATE_KEY";
+  const hasFilePath = params.filePath !== undefined;
+  const filePath = params.filePath?.trim() ?? "";
+
+  if (hasFilePath && !filePath) {
+    throw new CliError("--private-key-file cannot be empty.");
+  }
+
+  if (params.explicit !== undefined && hasFilePath) {
+    throw new CliError(
+      "Provide the wallet private key via only one source: --private-key, --private-key-file, or the selected environment variable."
+    );
+  }
+
+  if (params.explicit !== undefined) {
+    return normalizePrivateKey(params.explicit);
+  }
+
+  if (hasFilePath) {
+    const fileValue = await readFile(filePath, "utf8");
+    return normalizePrivateKey(fileValue);
+  }
+
+  const envValue = process.env[envName] ?? "";
+  if (!envValue.trim()) {
+    throw new CliError(
+      `Private key missing. Set ${envName} or provide --private-key-file.`
+    );
+  }
+
+  return normalizePrivateKey(envValue);
 }
 
 export function normalizeWalletSignature(signature: string): `0x${string}` {

@@ -13,7 +13,9 @@ export interface TopupCryptoOptions {
   payCurrency?: string;
   autoPay?: boolean;
   privateKey?: string;
+  privateKeyFile?: string;
   privateKeyEnv: string;
+  allowUnsafePrivateKeyArgv?: boolean;
   sessionFile: string;
   wait?: boolean;
   pollIntervalSeconds: number;
@@ -224,7 +226,12 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
       );
     }
 
-    const privateKey = resolvePrivateKey(options.privateKey, options.privateKeyEnv);
+    const privateKey = await resolvePrivateKey({
+      explicit: options.privateKey,
+      filePath: options.privateKeyFile,
+      envName: options.privateKeyEnv,
+      allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+    });
     const payment = await executeDirectPayment({
       privateKey,
       payAddress: created.pay_address,

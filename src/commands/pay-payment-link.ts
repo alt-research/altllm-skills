@@ -18,7 +18,9 @@ export interface PayPaymentLinkOptions {
   baseUrl?: string;
   sessionFile: string;
   privateKey?: string;
+  privateKeyFile?: string;
   privateKeyEnv: string;
+  allowUnsafePrivateKeyArgv?: boolean;
   wait?: boolean;
   pollIntervalSeconds: number;
   timeoutSeconds: number;
@@ -55,7 +57,12 @@ export async function payPaymentLink(options: PayPaymentLinkOptions): Promise<vo
     );
   }
 
-  const privateKey = resolvePrivateKey(options.privateKey, options.privateKeyEnv);
+  const privateKey = await resolvePrivateKey({
+    explicit: options.privateKey,
+    filePath: options.privateKeyFile,
+    envName: options.privateKeyEnv,
+    allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+  });
   const payment = await executeDirectPayment({
     privateKey,
     payAddress: link.pay_address,
