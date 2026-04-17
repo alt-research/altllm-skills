@@ -143,29 +143,37 @@ node dist/cli.js cloud-claw-deployment --name swift-owl-9
 Launch a new PicoClaw:
 
 ```bash
+export TELEGRAM_BOT_TOKEN=123456:ABC-your-telegram-bot-token
 node dist/cli.js cloud-claw-deploy \
   --name swift-owl-9 \
   --agent-type picoclaw \
-  --telegram-bot-token 123456789:ABC... \
+  --telegram-bot-token-env TELEGRAM_BOT_TOKEN \
   --telegram-allowed-users 123456789
 ```
 
 Launch a new OpenClaw:
 
 ```bash
+export TELEGRAM_BOT_TOKEN=123456:ABC-your-telegram-bot-token
 node dist/cli.js cloud-claw-deploy \
   --name happy-fox-12 \
   --agent-type openclaw \
   --model altllm/altllm-standard \
-  --telegram-bot-token 123456789:ABC... \
+  --telegram-bot-token-env TELEGRAM_BOT_TOKEN \
   --telegram-allowed-users 123456789
 ```
 
 For Telegram-backed deployments:
 
 - `--telegram-bot-token` is required for `picoclaw` and `aintern`
+- safer alternatives are `--telegram-bot-token-env` and `--telegram-bot-token-file`
 - omitting `--telegram-allowed-users` on `picoclaw` or `aintern` allows everyone to message the bot
 - passing `--telegram-allowed-users ""` is rejected; use omission, not an empty string, for public bot behavior
+
+Other deployment secrets also support non-argv input:
+
+- `--altllm-api-key-env` / `--altllm-api-key-file`
+- `--anthropic-api-key-env` / `--anthropic-api-key-file`
 
 Manage an existing VM:
 
