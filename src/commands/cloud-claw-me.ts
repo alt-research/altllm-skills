@@ -5,6 +5,7 @@ export interface CloudClawMeOptions {
   baseUrl?: string;
   sessionFile: string;
   forceSso?: boolean;
+  allowTokenForwarding?: boolean;
 }
 
 export async function cloudClawMe(options: CloudClawMeOptions): Promise<void> {
@@ -14,6 +15,7 @@ export async function cloudClawMe(options: CloudClawMeOptions): Promise<void> {
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     forceSso: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   writeJson(result);

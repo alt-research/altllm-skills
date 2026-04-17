@@ -1,5 +1,9 @@
 import { CliError, normalizeBaseUrl, requestJson } from "../lib/api.js";
-import { DEFAULT_SESSION_FILE, loadSession } from "../lib/session.js";
+import {
+  DEFAULT_SESSION_FILE,
+  loadSession,
+  resolveSessionBackedBaseUrl,
+} from "../lib/session.js";
 import { executeDirectPayment, resolvePrivateKey } from "../lib/wallet.js";
 
 export interface TopupCryptoOptions {
@@ -14,6 +18,7 @@ export interface TopupCryptoOptions {
   wait?: boolean;
   pollIntervalSeconds: number;
   timeoutSeconds: number;
+  allowTokenHostMismatch?: boolean;
 }
 
 interface CreatePaymentLinkResponse {
@@ -56,6 +61,19 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export function validatePaymentPollingOptions(params: {
+  pollIntervalSeconds: number;
+  timeoutSeconds: number;
+}): void {
+  if (!Number.isFinite(params.pollIntervalSeconds) || params.pollIntervalSeconds <= 0) {
+    throw new CliError("Polling interval must be a positive number of seconds.");
+  }
+
+  if (!Number.isFinite(params.timeoutSeconds) || params.timeoutSeconds <= 0) {
+    throw new CliError("Timeout must be a positive number of seconds.");
+  }
+}
+
 export async function fetchPaymentLinkStatus(
   baseUrl: string,
   token: string,
@@ -73,7 +91,7 @@ export async function fetchPaymentLinkStatus(
   }
 
   throw new CliError(
-    `Payment link not found in the recent ${PAYMENT_LINK_LOOKUP_LIMIT} Portal payment links: ${paymentLinkId}`
+    `Payment link ${paymentLinkId} was not found in the newest ${PAYMENT_LINK_LOOKUP_LIMIT} Portal payment links. The current backend only exposes the latest payment-links list and does not support lookup by paymentLinkId or older-page pagination, so older links are not reachable from payment-status/pay-payment-link yet.`
   );
 }
 
@@ -116,6 +134,11 @@ export async function waitForPaymentLinkSettlement(params: {
   pollIntervalSeconds: number;
   timeoutSeconds: number;
 }): Promise<PaymentLinkRecord> {
+  validatePaymentPollingOptions({
+    pollIntervalSeconds: params.pollIntervalSeconds,
+    timeoutSeconds: params.timeoutSeconds,
+  });
+
   const startedAt = Date.now();
 
   while (true) {
@@ -145,6 +168,7 @@ export interface PaymentStatusOptions {
   wait?: boolean;
   pollIntervalSeconds: number;
   timeoutSeconds: number;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
@@ -152,8 +176,21 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
     throw new CliError("Amount must be >= 0.5 USD.");
   }
 
+  if (options.wait) {
+    validatePaymentPollingOptions({
+      pollIntervalSeconds: options.pollIntervalSeconds,
+      timeoutSeconds: options.timeoutSeconds,
+    });
+  }
+
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
-  const baseUrl = normalizeBaseUrl(options.baseUrl || session.baseUrl);
+  const baseUrl = normalizeBaseUrl(
+    resolveSessionBackedBaseUrl({
+      sessionBaseUrl: session.baseUrl,
+      baseUrl: options.baseUrl,
+      allowTokenHostMismatch: options.allowTokenHostMismatch,
+    })
+  );
 
   const created = await requestJson<CreatePaymentLinkResponse>({
     method: "POST",
@@ -230,8 +267,21 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
 }
 
 export async function paymentStatus(options: PaymentStatusOptions): Promise<void> {
+  if (options.wait) {
+    validatePaymentPollingOptions({
+      pollIntervalSeconds: options.pollIntervalSeconds,
+      timeoutSeconds: options.timeoutSeconds,
+    });
+  }
+
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
-  const baseUrl = normalizeBaseUrl(options.baseUrl || session.baseUrl);
+  const baseUrl = normalizeBaseUrl(
+    resolveSessionBackedBaseUrl({
+      sessionBaseUrl: session.baseUrl,
+      baseUrl: options.baseUrl,
+      allowTokenHostMismatch: options.allowTokenHostMismatch,
+    })
+  );
   const link = options.wait
     ? await waitForPaymentLinkSettlement({
         baseUrl,

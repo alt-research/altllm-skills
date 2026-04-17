@@ -43,5 +43,6 @@ node dist/cli.js pay-payment-link \
 
 ## Notes
 
-- Payment-link lookup currently uses the recent Portal payment-links list (`limit=100`).
+- `payment-status` and `pay-payment-link` currently only search the newest `100` Portal payment links.
+- Older payment links are not reachable from these CLI flows until the backend supports lookup by ID or older-page pagination.
 - Automatic payment requires `pay_address`, `pay_amount`, and `pay_currency` to be present in the API response.

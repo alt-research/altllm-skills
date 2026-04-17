@@ -6,6 +6,7 @@ export interface CloudClawDeploymentOptions {
   baseUrl?: string;
   sessionFile: string;
   forceSso?: boolean;
+  allowTokenForwarding?: boolean;
 }
 
 export async function cloudClawDeployment(
@@ -17,6 +18,7 @@ export async function cloudClawDeployment(
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     forceSso: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   writeJson(result);

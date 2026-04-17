@@ -5,12 +5,14 @@ import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 export interface UsageSummaryOptions {
   baseUrl?: string;
   sessionFile: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function usageSummary(options: UsageSummaryOptions): Promise<void> {
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const result = await requestJson<Record<string, unknown>>({

@@ -63,6 +63,8 @@ Production default:
 
 Only use localhost when you are explicitly testing local Portal APIs.
 
+If a command is reusing your saved Portal session token, the CLI will refuse to send that token to a different `--base-url` host unless you also pass `--allow-token-host-mismatch`.
+
 ## Install
 
 ```bash
@@ -124,6 +126,8 @@ Inspect Cloud Claw user state:
 node dist/cli.js cloud-claw-me
 ```
 
+If you intentionally point Cloud Claw commands at a non-trusted host with `--cloud-claw-base-url`, also pass `--allow-cloud-claw-token-forwarding`. Without that explicit override, the CLI will refuse to POST your saved Portal session token to that host.
+
 List deployments:
 
 ```bash
@@ -161,6 +165,7 @@ For Telegram-backed deployments:
 
 - `--telegram-bot-token` is required for `picoclaw` and `aintern`
 - omitting `--telegram-allowed-users` on `picoclaw` or `aintern` allows everyone to message the bot
+- passing `--telegram-allowed-users ""` is rejected; use omission, not an empty string, for public bot behavior
 
 Manage an existing VM:
 
@@ -434,7 +439,13 @@ node dist/cli.js pay-payment-link \
 - `pay-payment-link --wait` prints one final JSON document.
 - The CLI does not silently downgrade from direct payment mode to hosted checkout mode.
 - Terminal payment-link statuses such as `completed`, `expired`, `failed`, and `deactivated` are rejected before direct payment is sent.
-- Payment-link lookup currently scans the most recent `100` Portal payment links via `GET /api/billing/payment-links?limit=100`.
+- `payment-status` and `pay-payment-link` currently depend on the newest `100` Portal payment links exposed by `GET /api/billing/payment-links?limit=100`.
+- Older payment links may be unreachable from the CLI until the backend exposes either lookup by ID or older-page pagination.
+
+## HTTP Timeouts
+
+- Non-stream CLI HTTP requests time out after `30000ms` by default.
+- Override this with `ALTLLM_HTTP_TIMEOUT_MS` if you need a different non-stream request timeout.
 
 Supported direct-payment currencies:
 

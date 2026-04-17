@@ -1,5 +1,5 @@
 import { requestJson } from "../lib/api.js";
-import { appendDateRangeParams } from "../lib/history.js";
+import { appendMonthOrDateRangeParams } from "../lib/history.js";
 import { resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -9,16 +9,18 @@ export interface UsageByModelOptions {
   startDate?: string;
   endDate?: string;
   month?: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function usageByModel(options: UsageByModelOptions): Promise<void> {
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const searchParams = new URLSearchParams();
-  appendDateRangeParams(searchParams, {
+  appendMonthOrDateRangeParams(searchParams, {
     startDate: options.startDate,
     endDate: options.endDate,
     month: options.month,

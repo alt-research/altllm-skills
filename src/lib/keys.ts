@@ -1,5 +1,9 @@
 import { CliError, normalizeBaseUrl } from "./api.js";
-import { DEFAULT_SESSION_FILE, loadSession } from "./session.js";
+import {
+  DEFAULT_SESSION_FILE,
+  loadSession,
+  resolveSessionBackedBaseUrl,
+} from "./session.js";
 
 export interface KeyPermissions {
   models: string[];
@@ -51,10 +55,17 @@ const API_KEY_NAME_MAX_LENGTH = 64;
 export async function resolvePortalContext(options: {
   baseUrl?: string;
   sessionFile: string;
+  allowTokenHostMismatch?: boolean;
 }): Promise<{ baseUrl: string; token: string }> {
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
   return {
-    baseUrl: normalizeBaseUrl(options.baseUrl || session.baseUrl),
+    baseUrl: normalizeBaseUrl(
+      resolveSessionBackedBaseUrl({
+        sessionBaseUrl: session.baseUrl,
+        baseUrl: options.baseUrl,
+        allowTokenHostMismatch: options.allowTokenHostMismatch,
+      })
+    ),
     token: session.token,
   };
 }

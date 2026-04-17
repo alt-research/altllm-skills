@@ -120,6 +120,7 @@ Only supported EVM-compatible `pay_currency` values should be auto-paid. Unsuppo
 ## Security
 
 - Never commit secrets, private keys, session files, or local env files.
+- Common local `.env`-style files are gitignored, but still treat them as sensitive local-only state.
 - Treat `~/.altllm/portal-cli-session.json` as sensitive local state.
 - Prefer environment variables such as `ALTLLM_WALLET_PRIVATE_KEY` over inline secret arguments.
 - If the wallet signs externally, prefer challenge + signature verification flow instead of requiring the raw private key locally.

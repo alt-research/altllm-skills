@@ -31,6 +31,12 @@ export interface LoginWalletOptions {
   sessionFile: string;
 }
 
+function validateChainId(chainId: number): void {
+  if (!Number.isFinite(chainId) || !Number.isInteger(chainId) || chainId <= 0) {
+    throw new CliError("Chain ID must be a positive integer.");
+  }
+}
+
 export async function loginWallet(options: LoginWalletOptions): Promise<void> {
   const baseUrl = normalizeBaseUrl(options.baseUrl);
   const walletAddress = options.walletAddress.trim();
@@ -73,6 +79,8 @@ export async function loginWallet(options: LoginWalletOptions): Promise<void> {
     );
     return;
   }
+
+  validateChainId(options.chainId);
 
   const challenge = await requestJson<CryptoChallengeResponse>({
     method: "POST",

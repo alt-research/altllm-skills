@@ -1,14 +1,25 @@
 import { normalizeBaseUrl, requestJson } from "../lib/api.js";
-import { DEFAULT_SESSION_FILE, loadSession } from "../lib/session.js";
+import {
+  DEFAULT_SESSION_FILE,
+  loadSession,
+  resolveSessionBackedBaseUrl,
+} from "../lib/session.js";
 
 export interface CreditOptions {
   baseUrl?: string;
   sessionFile: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function credit(options: CreditOptions): Promise<void> {
   const session = await loadSession(options.sessionFile || DEFAULT_SESSION_FILE);
-  const baseUrl = normalizeBaseUrl(options.baseUrl || session.baseUrl);
+  const baseUrl = normalizeBaseUrl(
+    resolveSessionBackedBaseUrl({
+      sessionBaseUrl: session.baseUrl,
+      baseUrl: options.baseUrl,
+      allowTokenHostMismatch: options.allowTokenHostMismatch,
+    })
+  );
 
   const result = await requestJson<Record<string, unknown>>({
     method: "GET",
@@ -18,4 +29,3 @@ export async function credit(options: CreditOptions): Promise<void> {
 
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
-

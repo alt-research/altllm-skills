@@ -1,4 +1,4 @@
-import { CliError, normalizeBaseUrl } from "../lib/api.js";
+import { CliError, fetchWithTimeout, normalizeBaseUrl } from "../lib/api.js";
 import { DEFAULT_CLOUD_CLAW_BASE_URL, getCloudClawJwt, validateDeploymentName } from "../lib/cloud-claw.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -7,6 +7,7 @@ export interface CloudClawLogsOptions {
   baseUrl?: string;
   sessionFile: string;
   forceSso?: boolean;
+  allowTokenForwarding?: boolean;
   stream?: boolean;
 }
 
@@ -16,10 +17,13 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
     baseUrl: options.baseUrl || DEFAULT_CLOUD_CLAW_BASE_URL,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     force: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   if (!options.stream) {
-    const response = await fetch(`${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs`, {
+    const response = await fetchWithTimeout({
+      method: "GET",
+      url: `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs`,
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${jwt}`,
@@ -34,8 +38,13 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
   }
 
   const response = await fetch(
-    `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs/stream?auth=${encodeURIComponent(jwt)}`,
-    { headers: { Accept: "text/event-stream" } }
+    `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs/stream`,
+    {
+      headers: {
+        Accept: "text/event-stream",
+        Authorization: `Bearer ${jwt}`,
+      },
+    }
   );
 
   if (!response.ok || !response.body) {

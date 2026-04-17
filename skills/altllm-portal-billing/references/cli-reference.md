@@ -76,3 +76,5 @@ node dist/cli.js usage-by-key \
 
 - `credit` and `redeem-promo` pass through the API response body unchanged.
 - Transaction history and usage analytics are useful for validating gateway metering behavior.
+- `usage-timeline` and `usage-by-model` accept either `--month` or a complete `--start-date` / `--end-date` range, but not both.
+- `usage-by-key` requires both `--start-date` and `--end-date`.

@@ -12,12 +12,14 @@ export interface TransactionsOptions {
   page?: number;
   limit?: number;
   type?: string;
+  allowTokenHostMismatch?: boolean;
 }
 
 export async function transactions(options: TransactionsOptions): Promise<void> {
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const searchParams = new URLSearchParams();

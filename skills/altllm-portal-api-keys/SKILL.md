@@ -32,6 +32,17 @@ Portal API key lifecycle management for the local `altllm` CLI.
 - `update-api-key --status disabled` is reversible.
 - `revoke-api-key` is permanent.
 
+## Known Production Limitation
+
+- The single-key Portal API routes are currently broken in production.
+- Affected commands:
+  - `get-api-key`
+  - `update-api-key`
+  - `revoke-api-key`
+- Commands that still work:
+  - `list-api-keys`
+  - `create-api-key`
+
 ## Reference
 
 See [references/cli-reference.md](references/cli-reference.md) for command examples and representative responses.
