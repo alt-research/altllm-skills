@@ -1,5 +1,5 @@
 import { chmod, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { homedir } from "node:os";
 
 import { CliError } from "./api.js";
@@ -17,6 +17,7 @@ export interface PortalSession {
 export const DEFAULT_SESSION_FILE = `${homedir()}/.altllm/portal-cli-session.json`;
 const SESSION_DIR_MODE = 0o700;
 const SESSION_FILE_MODE = 0o600;
+const DEFAULT_SESSION_DIRECTORY = dirname(DEFAULT_SESSION_FILE);
 
 function isPermissionHardeningSupported(): boolean {
   return process.platform !== "win32";
@@ -27,7 +28,9 @@ async function hardenSessionPathPermissions(path: string): Promise<void> {
     return;
   }
 
-  await chmod(dirname(path), SESSION_DIR_MODE);
+  if (resolve(dirname(path)) === resolve(DEFAULT_SESSION_DIRECTORY)) {
+    await chmod(dirname(path), SESSION_DIR_MODE);
+  }
   await chmod(path, SESSION_FILE_MODE);
 }
 
@@ -41,7 +44,13 @@ async function tryHardenSessionPathPermissions(path: string): Promise<void> {
 }
 
 export async function saveSession(path: string, session: PortalSession): Promise<void> {
-  await mkdir(dirname(path), { recursive: true, mode: SESSION_DIR_MODE });
+  const sessionDirectory = dirname(path);
+  const mkdirOptions =
+    resolve(sessionDirectory) === resolve(DEFAULT_SESSION_DIRECTORY)
+      ? { recursive: true, mode: SESSION_DIR_MODE }
+      : { recursive: true };
+
+  await mkdir(sessionDirectory, mkdirOptions);
   await writeFile(path, JSON.stringify(session, null, 2), {
     encoding: "utf8",
     mode: SESSION_FILE_MODE,
