@@ -113,11 +113,18 @@ export async function requestJson<T>({
   });
 
   const text = await response.text();
-  const json = text ? JSON.parse(text) : {};
 
   if (!response.ok) {
     throw new CliError(`${method} ${url} failed: ${response.status} ${text}`);
   }
 
-  return json as T;
+  if (!text) {
+    return {} as T;
+  }
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new CliError(`${method} ${url} returned invalid JSON: ${text}`);
+  }
 }
