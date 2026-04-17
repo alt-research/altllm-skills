@@ -7,22 +7,40 @@ export class CliError extends Error {
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
 
-export function normalizeBaseUrl(baseUrl: string): string {
-  const normalized = baseUrl.replace(/\/+$/, "");
-
+function parseBaseUrl(baseUrl: string): URL {
   let parsed: URL;
   try {
-    parsed = new URL(normalized);
+    parsed = new URL(baseUrl);
   } catch {
     throw new CliError(`Invalid base URL: ${baseUrl}`);
   }
 
+  return parsed;
+}
+
+function isLoopbackHostname(hostname: string): boolean {
+  const normalizedHostname = hostname.toLowerCase();
+  return (
+    normalizedHostname === "localhost" ||
+    normalizedHostname === "::1" ||
+    /^127(?:\.\d{1,3}){3}$/.test(normalizedHostname)
+  );
+}
+
+export function normalizeBaseUrl(baseUrl: string): string {
+  const normalized = baseUrl.replace(/\/+$/, "");
+  parseBaseUrl(normalized);
+  return normalized;
+}
+
+export function requireSecureNonLocalBaseUrl(
+  baseUrl: string,
+  credentialDescription: string
+): string {
+  const normalized = normalizeBaseUrl(baseUrl);
+  const parsed = parseBaseUrl(normalized);
   const protocol = parsed.protocol.toLowerCase();
-  const hostname = parsed.hostname.toLowerCase();
-  const isLoopbackHost =
-    hostname === "localhost" ||
-    hostname === "::1" ||
-    /^127(?:\.\d{1,3}){3}$/.test(hostname);
+  const isLoopbackHost = isLoopbackHostname(parsed.hostname);
 
   if (protocol === "https:") {
     return normalized;
@@ -33,7 +51,7 @@ export function normalizeBaseUrl(baseUrl: string): string {
   }
 
   throw new CliError(
-    `Insecure base URL not allowed for non-local hosts: ${normalized}. Use https:// for non-local targets.`
+    `Refusing to send ${credentialDescription} to insecure non-local base URL ${normalized}. Use https:// for non-local targets.`
   );
 }
 

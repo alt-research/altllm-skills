@@ -3,6 +3,7 @@ import {
   CliError,
   normalizeBaseUrl,
   requestJson,
+  requireSecureNonLocalBaseUrl,
 } from "./api.js";
 import { DEFAULT_SESSION_FILE, loadSession } from "./session.js";
 
@@ -22,6 +23,10 @@ function ensureCloudClawBaseUrlAllowed(params: {
   allowTokenForwarding?: boolean;
 }): void {
   const normalizedBaseUrl = normalizeCloudClawBaseUrl(params.baseUrl);
+  requireSecureNonLocalBaseUrl(
+    normalizedBaseUrl,
+    "the saved Portal session token"
+  );
   const normalizedTrustedBaseUrl = normalizeCloudClawBaseUrl(
     TRUSTED_CLOUD_CLAW_BASE_URL
   );

@@ -5,7 +5,7 @@ Use these rules before the first `altllm` command in a fresh checkout or after c
 1. Default to the production Portal API:
    - `https://platform-api.altllm.ai`
    - Only use `http://localhost:7040` when the task is explicitly about local development.
-   - Non-local base URLs must use `https://`.
+   - Commands that reuse a saved Portal session token must use `https://` for non-local base URLs.
 2. Build the local CLI before first use in a fresh checkout:
    - `npm install`
    - `npm run typecheck` when TypeScript changed
