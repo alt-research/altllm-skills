@@ -139,6 +139,7 @@ node dist/cli.js cloud-claw-deployment --name swift-owl-9
 Launch a new PicoClaw:
 
 ```bash
+export TELEGRAM_BOT_TOKEN=123456:ABC-your-telegram-bot-token
 node dist/cli.js cloud-claw-deploy \
   --name swift-owl-9 \
   --agent-type picoclaw \
@@ -149,6 +150,7 @@ node dist/cli.js cloud-claw-deploy \
 Launch a new OpenClaw:
 
 ```bash
+export TELEGRAM_BOT_TOKEN=123456:ABC-your-telegram-bot-token
 node dist/cli.js cloud-claw-deploy \
   --name happy-fox-12 \
   --agent-type openclaw \
