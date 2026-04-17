@@ -244,10 +244,6 @@ function validateChallengeMessageForAutoSign(params: {
         `Challenge URI mismatch. Expected ${TRUSTED_PORTAL_FRONTEND_ORIGIN}, got ${parsedMessage.uri.origin}.`
       );
     }
-  } else if (!isLoopbackHostname(parsedMessage.uri.hostname)) {
-    throw new CliError(
-      "Automatic wallet challenge signing on loopback APIs requires a loopback challenge URI."
-    );
   }
 }
 
