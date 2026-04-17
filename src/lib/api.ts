@@ -9,18 +9,6 @@ export function normalizeBaseUrl(baseUrl: string): string {
   return baseUrl.replace(/\/+$/, "");
 }
 
-function tryParseJson(text: string): unknown {
-  if (!text) {
-    return {};
-  }
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    return undefined;
-  }
-}
-
 export async function requestJson<T>({
   method,
   url,
@@ -57,10 +45,13 @@ export async function requestJson<T>({
     throw new CliError(`${method} ${url} failed: ${response.status} ${text}`);
   }
 
-  const json = tryParseJson(text);
-  if (text && json === undefined) {
-    throw new CliError(`${method} ${url} returned invalid JSON: ${text}`);
+  if (!text) {
+    return {} as T;
   }
 
-  return (json ?? {}) as T;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new CliError(`${method} ${url} returned invalid JSON: ${text}`);
+  }
 }
