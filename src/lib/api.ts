@@ -11,6 +11,24 @@ export function normalizeBaseUrl(baseUrl: string): string {
   return baseUrl.replace(/\/+$/, "");
 }
 
+export function canonicalizeOrigin(baseUrl: string): string {
+  let parsed: URL;
+  try {
+    parsed = new URL(normalizeBaseUrl(baseUrl));
+  } catch {
+    throw new CliError(`Invalid base URL: ${baseUrl}`);
+  }
+
+  const protocol = parsed.protocol.toLowerCase();
+  const hostname = parsed.hostname.toLowerCase();
+  const defaultPort =
+    protocol === "https:" ? "443" : protocol === "http:" ? "80" : "";
+  const portSuffix =
+    parsed.port && parsed.port !== defaultPort ? `:${parsed.port}` : "";
+
+  return `${protocol}//${hostname}${portSuffix}`;
+}
+
 function resolveRequestTimeoutMs(): number {
   const raw = process.env.ALTLLM_HTTP_TIMEOUT_MS?.trim();
   if (!raw) {
