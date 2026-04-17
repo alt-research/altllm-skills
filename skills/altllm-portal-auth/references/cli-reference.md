@@ -64,6 +64,8 @@ node dist/cli.js login-wallet \
 
 - If no local private key and no signature are provided, `login-wallet` returns a challenge payload.
 - External signers such as Privy work if they can sign the returned challenge message for the supplied wallet address.
+- Local auto-signing validates the returned challenge before signing it.
+- For non-default, non-loopback API hosts, use `--prepare` and sign externally.
 - The current backend rejects non-EVM address formats.
 - Signature validation is Ethereum-style message recovery on the server.
 

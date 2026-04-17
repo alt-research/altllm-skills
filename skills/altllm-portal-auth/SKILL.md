@@ -29,6 +29,8 @@ user-invocable: true
 - If the wallet can sign the challenge message, use the prepare + verify flow.
 - External signers such as Privy are valid as long as they return a standard wallet signature for the challenge.
 - If neither a local private key nor `--signature` is available, return the challenge payload and stop.
+- Before local auto-signing, validate that the returned challenge matches the requested wallet, chain, and expected AltLLM login challenge structure.
+- For non-default, non-loopback API hosts, prefer `--prepare` and external signing instead of local auto-signing.
 - Current backend support is still limited to EVM addresses and Ethereum-style signatures.
 - Save the resulting session to `~/.altllm/portal-cli-session.json` unless overridden.
 - `logout` only removes the local session file. It does not revoke API keys.
