@@ -439,7 +439,8 @@ node dist/cli.js pay-payment-link \
 - `pay-payment-link --wait` prints one final JSON document.
 - The CLI does not silently downgrade from direct payment mode to hosted checkout mode.
 - Terminal payment-link statuses such as `completed`, `expired`, `failed`, and `deactivated` are rejected before direct payment is sent.
-- Payment-link lookup currently scans the most recent `100` Portal payment links via `GET /api/billing/payment-links?limit=100`.
+- `payment-status` and `pay-payment-link` currently depend on the newest `100` Portal payment links exposed by `GET /api/billing/payment-links?limit=100`.
+- Older payment links may be unreachable from the CLI until the backend exposes either lookup by ID or older-page pagination.
 
 ## HTTP Timeouts
 

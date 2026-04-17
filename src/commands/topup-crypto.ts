@@ -91,7 +91,7 @@ export async function fetchPaymentLinkStatus(
   }
 
   throw new CliError(
-    `Payment link not found in the recent ${PAYMENT_LINK_LOOKUP_LIMIT} Portal payment links: ${paymentLinkId}`
+    `Payment link ${paymentLinkId} was not found in the newest ${PAYMENT_LINK_LOOKUP_LIMIT} Portal payment links. The current backend only exposes the latest payment-links list and does not support lookup by paymentLinkId or older-page pagination, so older links are not reachable from payment-status/pay-payment-link yet.`
   );
 }
 
