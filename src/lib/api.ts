@@ -7,8 +7,52 @@ export class CliError extends Error {
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
 
+function parseBaseUrl(baseUrl: string): URL {
+  let parsed: URL;
+  try {
+    parsed = new URL(baseUrl);
+  } catch {
+    throw new CliError(`Invalid base URL: ${baseUrl}`);
+  }
+
+  return parsed;
+}
+
+function isLoopbackHostname(hostname: string): boolean {
+  const normalizedHostname = hostname.toLowerCase();
+  return (
+    normalizedHostname === "localhost" ||
+    normalizedHostname === "::1" ||
+    /^127(?:\.\d{1,3}){3}$/.test(normalizedHostname)
+  );
+}
+
 export function normalizeBaseUrl(baseUrl: string): string {
-  return baseUrl.replace(/\/+$/, "");
+  const normalized = baseUrl.replace(/\/+$/, "");
+  parseBaseUrl(normalized);
+  return normalized;
+}
+
+export function requireSecureNonLocalBaseUrl(
+  baseUrl: string,
+  credentialDescription: string
+): string {
+  const normalized = normalizeBaseUrl(baseUrl);
+  const parsed = parseBaseUrl(normalized);
+  const protocol = parsed.protocol.toLowerCase();
+  const isLoopbackHost = isLoopbackHostname(parsed.hostname);
+
+  if (protocol === "https:") {
+    return normalized;
+  }
+
+  if (protocol === "http:" && isLoopbackHost) {
+    return normalized;
+  }
+
+  throw new CliError(
+    `Refusing to send ${credentialDescription} to insecure non-local base URL ${normalized}. Use https:// for non-local targets.`
+  );
 }
 
 export function canonicalizeOrigin(baseUrl: string): string {

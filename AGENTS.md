@@ -44,6 +44,7 @@ Default production API base URL:
 - `https://platform-api.altllm.ai`
 
 Do not change the default API base URL to localhost unless the task is explicitly about local development.
+Commands that reuse a saved Portal session token, or forward that token to Cloud Claw, must use `https://` for non-local hosts. Pre-auth flows such as `login-wallet --prepare` are outside that guardrail.
 
 ## Repo Structure
 

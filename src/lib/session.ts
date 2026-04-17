@@ -2,7 +2,12 @@ import { chmod, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { homedir } from "node:os";
 
-import { canonicalizeOrigin, CliError, normalizeBaseUrl } from "./api.js";
+import {
+  canonicalizeOrigin,
+  CliError,
+  normalizeBaseUrl,
+  requireSecureNonLocalBaseUrl,
+} from "./api.js";
 
 export interface PortalSession {
   baseUrl: string;
@@ -51,6 +56,10 @@ export function resolveSessionBackedBaseUrl(params: {
   const normalizedSessionBaseUrl = normalizeBaseUrl(params.sessionBaseUrl);
   const normalizedBaseUrl = normalizeBaseUrl(
     params.baseUrl || params.sessionBaseUrl
+  );
+  requireSecureNonLocalBaseUrl(
+    normalizedBaseUrl,
+    "the saved Portal session token"
   );
   const canonicalSessionOrigin = canonicalizeOrigin(normalizedSessionBaseUrl);
   const canonicalRequestedOrigin = canonicalizeOrigin(normalizedBaseUrl);

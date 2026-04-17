@@ -256,6 +256,10 @@ function validateChallengeMessageForAutoSign(params: {
 export async function loginWallet(options: LoginWalletOptions): Promise<void> {
   const baseUrl = normalizeBaseUrl(options.baseUrl);
   const walletAddress = options.walletAddress.trim();
+  validateUnsafePrivateKeyArgvUsage({
+    explicit: options.privateKey,
+    allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
+  });
 
   normalizeWalletAddress(walletAddress);
 
