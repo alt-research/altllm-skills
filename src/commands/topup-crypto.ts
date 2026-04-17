@@ -4,11 +4,7 @@ import {
   loadSession,
   resolveSessionBackedBaseUrl,
 } from "../lib/session.js";
-import {
-  executeDirectPayment,
-  resolvePrivateKey,
-  validateUnsafePrivateKeyArgvUsage,
-} from "../lib/wallet.js";
+import { executeDirectPayment, resolvePrivateKey } from "../lib/wallet.js";
 
 export interface TopupCryptoOptions {
   amount: number;
@@ -181,11 +177,6 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
   if (!Number.isFinite(options.amount) || options.amount < 0.5) {
     throw new CliError("Amount must be >= 0.5 USD.");
   }
-
-  validateUnsafePrivateKeyArgvUsage({
-    explicit: options.privateKey,
-    allowUnsafeArgv: options.allowUnsafePrivateKeyArgv,
-  });
 
   if (options.wait) {
     validatePaymentPollingOptions({
