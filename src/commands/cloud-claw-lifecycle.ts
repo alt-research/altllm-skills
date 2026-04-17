@@ -56,6 +56,7 @@ async function fetchDeploymentStatus(
     baseUrl: options.baseUrl,
     sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
     forceSso: options.forceSso,
+    allowTokenForwarding: options.allowTokenForwarding,
   });
 
   const status = result.deployment?.status?.trim().toLowerCase();
