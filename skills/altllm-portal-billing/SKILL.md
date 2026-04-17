@@ -32,8 +32,8 @@ Balance, promo, transaction history, and usage analytics for the local `altllm` 
 - History commands mostly return raw Portal API JSON.
 - `transactions` supports `--page`, `--limit`, and `--type`.
 - `usage-summary` currently reflects the current calendar month only.
-- `usage-timeline` and `usage-by-model` support either `--month` or an explicit date range.
-- `usage-by-key` currently supports explicit date range only.
+- `usage-timeline` and `usage-by-model` support either `--month` or a complete explicit date range.
+- `usage-by-key` currently requires a complete explicit date range.
 
 ## Reference
 
