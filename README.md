@@ -130,6 +130,8 @@ node dist/cli.js cloud-claw-me
 
 If you intentionally point Cloud Claw commands at a non-trusted host with `--cloud-claw-base-url`, also pass `--allow-cloud-claw-token-forwarding`. Without that explicit override, the CLI will refuse to POST your saved Portal session token to that host.
 
+During the security-rollup transition, Cloud Claw auth failures are normalized before they reach the user. A `401` or `403` from `portal-sso` means the saved Portal session was rejected; run `altllm login-wallet` again and retry. A `503` from `portal-sso` points to Portal or Cloud Claw auth availability or rollout configuration. A `401` from VM or log routes means the Cloud Claw session JWT was rejected, while a `403` means the account is not authorized for that resource or action. Non-auth server failures still include the HTTP status and backend detail for debugging.
+
 List deployments:
 
 ```bash

@@ -85,10 +85,11 @@ async function captureStdout(fn: () => Promise<void>): Promise<string> {
 
 function assertReloginError(error: unknown): boolean {
   assert(error instanceof Error);
-  assert.match(error.message, /Saved Portal session was rejected/);
-  assert.match(error.message, /trust-domain rollout/);
+  assert.match(
+    error.message,
+    /Saved Portal session was rejected|portal-sso rejected the saved Portal session/
+  );
   assert.match(error.message, /Run altllm login-wallet again/);
-  assert.match(error.message, /session file was not deleted/);
   assert.doesNotMatch(error.message, /failed: 401/);
   assert.doesNotMatch(error.message, /failed: 403/);
   return true;
@@ -113,7 +114,13 @@ test("Portal API saved-session 401 returns a clear re-login error", async () => 
 
     await assert.rejects(
       () => credit({ baseUrl, sessionFile }),
-      assertReloginError
+      (error) => {
+        assertReloginError(error);
+        assert(error instanceof Error);
+        assert.match(error.message, /trust-domain rollout/);
+        assert.match(error.message, /session file was not deleted/);
+        return true;
+      }
     );
 
     const persistedSession = JSON.parse(await readFile(sessionFile, "utf8")) as {
@@ -149,7 +156,13 @@ test("Cloud Claw portal-sso 403 returns the saved-session re-login error", async
           sessionFile,
           allowTokenForwarding: true,
         }),
-      assertReloginError
+      (error) => {
+        assertReloginError(error);
+        assert(error instanceof Error);
+        assert.match(error.message, /portal-sso rejected/);
+        assert.match(error.message, /portal token rejected/);
+        return true;
+      }
     );
   });
 });

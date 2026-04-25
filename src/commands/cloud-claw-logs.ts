@@ -1,5 +1,10 @@
 import { CliError, fetchWithTimeout, normalizeBaseUrl } from "../lib/api.js";
-import { DEFAULT_CLOUD_CLAW_BASE_URL, getCloudClawJwt, validateDeploymentName } from "../lib/cloud-claw.js";
+import {
+  DEFAULT_CLOUD_CLAW_BASE_URL,
+  formatCloudClawHttpError,
+  getCloudClawJwt,
+  validateDeploymentName,
+} from "../lib/cloud-claw.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
 export interface CloudClawLogsOptions {
@@ -21,9 +26,10 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
   });
 
   if (!options.stream) {
+    const url = `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs`;
     const response = await fetchWithTimeout({
       method: "GET",
-      url: `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs`,
+      url,
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${jwt}`,
@@ -31,26 +37,42 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
     });
     const text = await response.text();
     if (!response.ok) {
-      throw new CliError(`GET ${baseUrl}/api/vm/deployments/${name}/logs failed: ${response.status} ${text}`);
+      throw new CliError(
+        formatCloudClawHttpError({
+          surface: "logs",
+          method: "GET",
+          url,
+          status: response.status,
+          text,
+          operation: `GET /api/vm/deployments/${name}/logs`,
+        })
+      );
     }
     process.stdout.write(text.endsWith("\n") ? text : `${text}\n`);
     return;
   }
 
-  const response = await fetch(
-    `${normalizeBaseUrl(baseUrl)}/api/vm/deployments/${name}/logs/stream`,
-    {
-      headers: {
-        Accept: "text/event-stream",
-        Authorization: `Bearer ${jwt}`,
-      },
-    }
-  );
+  const streamUrl = `${normalizeBaseUrl(
+    baseUrl
+  )}/api/vm/deployments/${name}/logs/stream`;
+  const response = await fetch(streamUrl, {
+    headers: {
+      Accept: "text/event-stream",
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
 
   if (!response.ok || !response.body) {
     const text = await response.text();
     throw new CliError(
-      `GET ${baseUrl}/api/vm/deployments/${name}/logs/stream failed: ${response.status} ${text}`
+      formatCloudClawHttpError({
+        surface: "log-stream",
+        method: "GET",
+        url: streamUrl,
+        status: response.status,
+        text,
+        operation: `GET /api/vm/deployments/${name}/logs/stream`,
+      })
     );
   }
 
