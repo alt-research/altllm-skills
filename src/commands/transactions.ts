@@ -1,4 +1,4 @@
-import { requestJson } from "../lib/api.js";
+import { requestSavedPortalSessionJson } from "../lib/api.js";
 import {
   appendPaginationParams,
   parseTransactionFilterType,
@@ -33,7 +33,7 @@ export async function transactions(options: TransactionsOptions): Promise<void> 
   }
 
   const suffix = searchParams.size > 0 ? `?${searchParams.toString()}` : "";
-  const result = await requestJson<Record<string, unknown>>({
+  const result = await requestSavedPortalSessionJson<Record<string, unknown>>({
     method: "GET",
     url: `${baseUrl}/api/billing/transactions${suffix}`,
     token,

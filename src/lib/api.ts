@@ -6,6 +6,33 @@ export class CliError extends Error {
 }
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
+const SAVED_PORTAL_SESSION_RELOGIN_MESSAGE =
+  "Run altllm login-wallet again to refresh the saved Portal session, then retry this command.";
+
+interface RequestJsonOptions {
+  method: string;
+  url: string;
+  body?: unknown;
+  token?: string;
+  headers?: Record<string, string>;
+  savedPortalSession?: boolean;
+}
+
+function isAuthFailureStatus(status: number): boolean {
+  return status === 401 || status === 403;
+}
+
+function formatSavedPortalSessionAuthFailure(params: {
+  method: string;
+  url: string;
+  status: number;
+}): string {
+  return (
+    `Saved Portal session was rejected by ${params.method} ${params.url} (${params.status}). ` +
+    "This can happen if the session expired or was created before the AltLLM Portal session trust-domain rollout. " +
+    `${SAVED_PORTAL_SESSION_RELOGIN_MESSAGE} The session file was not deleted.`
+  );
+}
 
 function parseBaseUrl(baseUrl: string): URL {
   let parsed: URL;
@@ -131,13 +158,8 @@ export async function requestJson<T>({
   body,
   token,
   headers: extraHeaders,
-}: {
-  method: string;
-  url: string;
-  body?: unknown;
-  token?: string;
-  headers?: Record<string, string>;
-}): Promise<T> {
+  savedPortalSession,
+}: RequestJsonOptions): Promise<T> {
   const headers: Record<string, string> = {
     Accept: "application/json",
     ...extraHeaders,
@@ -162,6 +184,16 @@ export async function requestJson<T>({
   const text = await response.text();
 
   if (!response.ok) {
+    if (savedPortalSession && isAuthFailureStatus(response.status)) {
+      throw new CliError(
+        formatSavedPortalSessionAuthFailure({
+          method,
+          url,
+          status: response.status,
+        })
+      );
+    }
+
     throw new CliError(`${method} ${url} failed: ${response.status} ${text}`);
   }
 
@@ -174,4 +206,13 @@ export async function requestJson<T>({
   } catch {
     throw new CliError(`${method} ${url} returned invalid JSON: ${text}`);
   }
+}
+
+export async function requestSavedPortalSessionJson<T>(
+  params: Omit<RequestJsonOptions, "savedPortalSession">
+): Promise<T> {
+  return requestJson<T>({
+    ...params,
+    savedPortalSession: true,
+  });
 }

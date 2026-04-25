@@ -1,4 +1,4 @@
-import { normalizeBaseUrl, requestJson } from "../lib/api.js";
+import { normalizeBaseUrl, requestSavedPortalSessionJson } from "../lib/api.js";
 import {
   DEFAULT_SESSION_FILE,
   loadSession,
@@ -22,7 +22,7 @@ export async function redeemPromo(options: RedeemPromoOptions): Promise<void> {
     })
   );
 
-  const result = await requestJson<Record<string, unknown>>({
+  const result = await requestSavedPortalSessionJson<Record<string, unknown>>({
     method: "POST",
     url: `${baseUrl}/api/billing/redeem-promo`,
     token: session.token,

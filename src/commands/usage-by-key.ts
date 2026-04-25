@@ -1,4 +1,4 @@
-import { requestJson } from "../lib/api.js";
+import { requestSavedPortalSessionJson } from "../lib/api.js";
 import { appendRequiredDateRangeParams } from "../lib/history.js";
 import { resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
@@ -25,7 +25,7 @@ export async function usageByKey(options: UsageByKeyOptions): Promise<void> {
   });
 
   const suffix = searchParams.size > 0 ? `?${searchParams.toString()}` : "";
-  const result = await requestJson<Record<string, unknown>>({
+  const result = await requestSavedPortalSessionJson<Record<string, unknown>>({
     method: "GET",
     url: `${baseUrl}/api/usage/by-key${suffix}`,
     token,

@@ -1,4 +1,4 @@
-import { requestJson } from "../lib/api.js";
+import { requestSavedPortalSessionJson } from "../lib/api.js";
 import {
   KeyDeletedResponse,
   resolvePortalContext,
@@ -20,7 +20,7 @@ export async function revokeApiKey(options: RevokeApiKeyOptions): Promise<void> 
     allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
-  const result = await requestJson<KeyDeletedResponse>({
+  const result = await requestSavedPortalSessionJson<KeyDeletedResponse>({
     method: "DELETE",
     url: `${baseUrl}/api/keys/${options.keyId}`,
     token,

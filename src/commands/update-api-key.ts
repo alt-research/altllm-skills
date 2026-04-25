@@ -1,4 +1,4 @@
-import { CliError, requestJson } from "../lib/api.js";
+import { CliError, requestSavedPortalSessionJson } from "../lib/api.js";
 import {
   buildKeyPermissions,
   KeyDetail,
@@ -55,7 +55,7 @@ export async function updateApiKey(options: UpdateApiKeyOptions): Promise<void> 
     allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
-  const result = await requestJson<KeyDetail>({
+  const result = await requestSavedPortalSessionJson<KeyDetail>({
     method: "PATCH",
     url: `${baseUrl}/api/keys/${options.keyId}`,
     token,

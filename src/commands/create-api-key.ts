@@ -1,4 +1,4 @@
-import { requestJson } from "../lib/api.js";
+import { requestSavedPortalSessionJson } from "../lib/api.js";
 import {
   buildKeyPermissions,
   CreateKeyResponse,
@@ -30,7 +30,7 @@ export async function createApiKey(options: CreateApiKeyOptions): Promise<void> 
     allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
-  const result = await requestJson<CreateKeyResponse>({
+  const result = await requestSavedPortalSessionJson<CreateKeyResponse>({
     method: "POST",
     url: `${baseUrl}/api/keys`,
     token,
