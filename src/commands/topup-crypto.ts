@@ -1,4 +1,8 @@
-import { CliError, normalizeBaseUrl, requestJson } from "../lib/api.js";
+import {
+  CliError,
+  normalizeBaseUrl,
+  requestSavedPortalSessionJson,
+} from "../lib/api.js";
 import {
   DEFAULT_SESSION_FILE,
   loadSession,
@@ -85,7 +89,7 @@ export async function fetchPaymentLinkStatus(
   token: string,
   paymentLinkId: string
 ): Promise<PaymentLinkRecord> {
-  const payload = await requestJson<PaymentLinksResponse>({
+  const payload = await requestSavedPortalSessionJson<PaymentLinksResponse>({
     method: "GET",
     url: `${baseUrl}/api/billing/payment-links?limit=${PAYMENT_LINK_LOOKUP_LIMIT}`,
     token,
@@ -203,7 +207,7 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
     })
   );
 
-  const created = await requestJson<CreatePaymentLinkResponse>({
+  const created = await requestSavedPortalSessionJson<CreatePaymentLinkResponse>({
     method: "POST",
     url: `${baseUrl}/api/billing/payment-link`,
     token: session.token,

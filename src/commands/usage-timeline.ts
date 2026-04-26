@@ -1,4 +1,4 @@
-import { requestJson } from "../lib/api.js";
+import { requestSavedPortalSessionJson } from "../lib/api.js";
 import { appendMonthOrDateRangeParams } from "../lib/history.js";
 import { resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
@@ -27,7 +27,7 @@ export async function usageTimeline(options: UsageTimelineOptions): Promise<void
   });
 
   const suffix = searchParams.size > 0 ? `?${searchParams.toString()}` : "";
-  const result = await requestJson<Record<string, unknown>>({
+  const result = await requestSavedPortalSessionJson<Record<string, unknown>>({
     method: "GET",
     url: `${baseUrl}/api/usage/timeline${suffix}`,
     token,

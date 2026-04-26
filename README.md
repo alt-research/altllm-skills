@@ -212,6 +212,16 @@ Successful login stores a session at:
 
 On POSIX systems, the CLI saves the session directory and file with private permissions (`0700` for the directory and `0600` for the file).
 
+After the AltLLM Portal session trust-domain rollout, sessions created before the rollout may be rejected by Portal API routes or Cloud Claw `portal-sso`. When that happens, saved-session commands fail with a direct re-login instruction instead of a raw endpoint error:
+
+```bash
+node dist/cli.js login-wallet \
+  --base-url https://platform-api.altllm.ai \
+  --wallet-address 0x...
+```
+
+The CLI does not delete the existing session file automatically. `login-wallet` replaces it after a successful login, or you can remove it explicitly with `logout`.
+
 Remove the local Portal session:
 
 ```bash

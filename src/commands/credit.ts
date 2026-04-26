@@ -1,4 +1,4 @@
-import { normalizeBaseUrl, requestJson } from "../lib/api.js";
+import { normalizeBaseUrl, requestSavedPortalSessionJson } from "../lib/api.js";
 import {
   DEFAULT_SESSION_FILE,
   loadSession,
@@ -21,7 +21,7 @@ export async function credit(options: CreditOptions): Promise<void> {
     })
   );
 
-  const result = await requestJson<Record<string, unknown>>({
+  const result = await requestSavedPortalSessionJson<Record<string, unknown>>({
     method: "GET",
     url: `${baseUrl}/api/billing/balance`,
     token: session.token,

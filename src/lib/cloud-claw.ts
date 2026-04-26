@@ -3,6 +3,7 @@ import {
   CliError,
   normalizeBaseUrl,
   requestJson,
+  requestSavedPortalSessionJson,
   requireSecureNonLocalBaseUrl,
 } from "./api.js";
 import { DEFAULT_SESSION_FILE, loadSession } from "./session.js";
@@ -59,7 +60,10 @@ export async function getCloudClawJwt(params: {
 
   const session = await loadSession(params.sessionFile || DEFAULT_SESSION_FILE);
 
-  const sso = await requestJson<{ authenticated?: boolean; token?: string }>({
+  const sso = await requestSavedPortalSessionJson<{
+    authenticated?: boolean;
+    token?: string;
+  }>({
     method: "POST",
     url: `${baseUrl}/api/auth/portal-sso`,
     body: {

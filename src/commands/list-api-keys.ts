@@ -1,4 +1,4 @@
-import { requestJson } from "../lib/api.js";
+import { requestSavedPortalSessionJson } from "../lib/api.js";
 import { ListKeysResponse, resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -15,7 +15,7 @@ export async function listApiKeys(options: ListApiKeysOptions): Promise<void> {
     allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
-  const result = await requestJson<ListKeysResponse>({
+  const result = await requestSavedPortalSessionJson<ListKeysResponse>({
     method: "GET",
     url: `${baseUrl}/api/keys`,
     token,

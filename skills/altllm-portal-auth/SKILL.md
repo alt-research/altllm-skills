@@ -33,6 +33,7 @@ user-invocable: true
 - For non-default, non-loopback API hosts, prefer `--prepare` and external signing instead of local auto-signing.
 - Current backend support is still limited to EVM addresses and Ethereum-style signatures.
 - Save the resulting session to `~/.altllm/portal-cli-session.json` unless overridden.
+- If saved-session commands report that the Portal session was rejected after the trust-domain rollout, run `login-wallet` again to refresh the session.
 - `logout` only removes the local session file. It does not revoke API keys.
 
 ## Reference
