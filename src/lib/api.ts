@@ -130,14 +130,17 @@ export async function requestJson<T>({
   url,
   body,
   token,
+  headers: extraHeaders,
 }: {
   method: string;
   url: string;
   body?: unknown;
   token?: string;
+  headers?: Record<string, string>;
 }): Promise<T> {
   const headers: Record<string, string> = {
     Accept: "application/json",
+    ...extraHeaders,
   };
 
   let payload: string | undefined;

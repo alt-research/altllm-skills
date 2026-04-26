@@ -4,6 +4,7 @@ import {
   normalizeWalletSignature,
   resolvePrivateKey,
   signChallengeMessage,
+  validateUnsafePrivateKeyArgvUsage,
 } from "../lib/wallet.js";
 
 interface CryptoChallengeResponse {
@@ -15,7 +16,7 @@ interface CryptoChallengeResponse {
 }
 
 interface LoginResponse {
-  token: string;
+  token?: string;
   user: {
     id: string;
     email: string;
@@ -49,6 +50,9 @@ interface ParsedChallengeMessage {
 
 const TRUSTED_PORTAL_API_ORIGIN = "https://platform-api.altllm.ai";
 const TRUSTED_PORTAL_FRONTEND_ORIGIN = "https://platform.altllm.ai";
+const PORTAL_TOKEN_OPT_IN_HEADERS = {
+  "X-AltLLM-Return-Portal-Token": "1",
+};
 const CHALLENGE_MESSAGE_RE =
   /^([^\n]+) wants you to sign in with your Ethereum account:\n(0x[a-fA-F0-9]{40})\n\nSign this message to log in to AltLLM Portal\.\n\nURI: ([^\n]+)\nVersion: ([^\n]+)\nChain ID: ([^\n]+)\nNonce: ([^\n]+)\nIssued At: ([^\n]+)\nExpiration Time: ([^\n]+)$/;
 
@@ -64,6 +68,17 @@ function normalizeWalletAddress(walletAddress: string): string {
   }
 
   return walletAddress.toLowerCase();
+}
+
+function requirePortalSessionToken(login: LoginResponse): string {
+  const token = login.token?.trim();
+  if (!token) {
+    throw new CliError(
+      "Portal login response did not include a session token. This CLI requires the Portal API to honor X-AltLLM-Return-Portal-Token: 1 during wallet login."
+    );
+  }
+
+  return token;
 }
 
 function canonicalizeOrigin(url: string): string {
@@ -271,16 +286,18 @@ export async function loginWallet(options: LoginWalletOptions): Promise<void> {
     const login = await requestJson<LoginResponse>({
       method: "POST",
       url: `${baseUrl}/api/auth/crypto/verify`,
+      headers: PORTAL_TOKEN_OPT_IN_HEADERS,
       body: {
         wallet_address: walletAddress,
         nonce: options.nonce.trim(),
         signature: normalizeWalletSignature(options.signature),
       },
     });
+    const token = requirePortalSessionToken(login);
 
     await saveSession(options.sessionFile || DEFAULT_SESSION_FILE, {
       baseUrl,
-      token: login.token,
+      token,
       user: login.user,
     });
 
@@ -376,16 +393,18 @@ export async function loginWallet(options: LoginWalletOptions): Promise<void> {
   const login = await requestJson<LoginResponse>({
     method: "POST",
     url: `${baseUrl}/api/auth/crypto/verify`,
+    headers: PORTAL_TOKEN_OPT_IN_HEADERS,
     body: {
       wallet_address: walletAddress,
       nonce: challenge.nonce,
       signature,
     },
   });
+  const token = requirePortalSessionToken(login);
 
   await saveSession(options.sessionFile || DEFAULT_SESSION_FILE, {
     baseUrl,
-    token: login.token,
+    token,
     user: login.user,
   });
 
