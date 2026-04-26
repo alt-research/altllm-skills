@@ -15,3 +15,4 @@ These notes apply when using the Cloud Claw skills from this repository.
 5. Do not default to internal build/image scripts unless the user explicitly asks for infra maintenance.
 6. Do not forward the saved Portal session token to an arbitrary Cloud Claw host by default. If a non-trusted `--cloud-claw-base-url` is truly intended, require an explicit override such as `--allow-cloud-claw-token-forwarding`.
 7. When forwarding the saved Portal session token to Cloud Claw, require `https://` for non-local `--cloud-claw-base-url` values. Only loopback local-development targets should use `http://`.
+8. During auth/security rollouts, interpret `portal-sso` `401`/`403` as saved Portal session rejection and ask the user to run `altllm login-wallet` again. Treat `portal-sso` `503` as Portal or Cloud Claw auth availability/configuration risk. Treat Cloud Claw VM/log `401` as JWT rejection and `403` as account/resource authorization denial.

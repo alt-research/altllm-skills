@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/cli.ts",
-    "test": "npm run build && node --test tests/*.test.mjs && node --import tsx --test test/**/*.test.ts",
+    "test": "npm run build && node --test tests/*.test.mjs && node --import tsx --test test/**/*.test.ts tests/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
