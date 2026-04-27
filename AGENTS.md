@@ -58,6 +58,8 @@ Commands that reuse a saved Portal session token, or forward that token to Cloud
   - saved session token handling
 - `src/lib/wallet.ts`
   - wallet signing and direct payment execution
+- `RELEASE.md`
+  - versioning, release checklist, and release note template
 - `skills/altllm-portal-cli/`
   - umbrella repo-local skill docs for agents
 - `skills/altllm-portal-auth/`

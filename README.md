@@ -4,6 +4,8 @@ TypeScript CLI and repo-local agent skills for AltLLM Portal operations.
 
 If you want a task-oriented guide for what an agent can do with these skills, start with [GUIDE.md](./GUIDE.md).
 
+For versioning and release-note preparation, see [RELEASE.md](./RELEASE.md).
+
 ## Introduction
 
 **AltLLM** is a platform that gives users a managed way to access AltLLM models and infrastructure. In practice, the platform has two main surfaces:
