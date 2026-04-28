@@ -377,7 +377,7 @@ test("security rollup: Cloud Claw logs use bearer JWT", async (t) => {
   assert.equal(stdout(), "ready\n");
 });
 
-test("security rollup: Cloud Claw stream logs use bearer JWT", async (t) => {
+test("security rollup: Cloud Claw stream logs use auth query JWT", async (t) => {
   const sessionFile = await createTempSessionPath(t);
   await writePortalSession(sessionFile);
   const stdout = captureStdout(t);
@@ -391,9 +391,9 @@ test("security rollup: Cloud Claw stream logs use bearer JWT", async (t) => {
 
     assert.equal(
       url.href,
-      `${CLOUD_CLAW_BASE_URL}/api/vm/deployments/demo/logs/stream`
+      `${CLOUD_CLAW_BASE_URL}/api/vm/deployments/demo/logs/stream?auth=cloud-claw-jwt`
     );
-    assert.equal(requestHeaders(init).get("authorization"), "Bearer cloud-claw-jwt");
+    assert.equal(requestHeaders(init).get("authorization"), null);
     return new Response(
       new ReadableStream({
         start(controller) {

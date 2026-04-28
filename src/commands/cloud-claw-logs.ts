@@ -52,13 +52,14 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
     return;
   }
 
-  const streamUrl = `${normalizeBaseUrl(
+  const streamDisplayUrl = `${normalizeBaseUrl(
     baseUrl
   )}/api/vm/deployments/${name}/logs/stream`;
-  const response = await fetch(streamUrl, {
+  const streamUrl = new URL(streamDisplayUrl);
+  streamUrl.searchParams.set("auth", jwt);
+  const response = await fetch(streamUrl.toString(), {
     headers: {
       Accept: "text/event-stream",
-      Authorization: `Bearer ${jwt}`,
     },
   });
 
@@ -68,7 +69,7 @@ export async function cloudClawLogs(options: CloudClawLogsOptions): Promise<void
       formatCloudClawHttpError({
         surface: "log-stream",
         method: "GET",
-        url: streamUrl,
+        url: streamDisplayUrl,
         status: response.status,
         text,
         operation: `GET /api/vm/deployments/${name}/logs/stream`,
