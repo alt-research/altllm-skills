@@ -30,6 +30,12 @@ This skill family is specifically about the **Portal CLI workflow** in this repo
 | `altllm-portal-billing` | Balance, promo, transactions, and usage analytics | Credit balance, promo redemption, billing history, usage views |
 | `altllm-portal-payments` | Payment-link creation, polling, and direct payment execution | Crypto top-up, payment status, direct wallet payment |
 
+## Plan Awareness
+
+- Personal tiers are `free`, `basic`, `pro`, and `power`; Business/Flex is `flex`.
+- Use `credit` to inspect plan/model-access metadata returned by Portal, including `subscription_tier: "flex"` when present.
+- Flex users can create API key allowlists with normal AltLLM model IDs and Flex-only `altllm-flex-*` IDs, subject to backend access checks.
+
 ## Working Rules
 
 - Prefer the focused skill when the request stays within one domain.

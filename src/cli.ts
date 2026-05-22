@@ -545,6 +545,7 @@ program
   .requiredOption("--amount <usd>", "Credit amount in USD")
   .option("--base-url <url>", "Portal API base URL")
   .option("--pay-currency <ticker>", "NOWPayments pay_currency for direct payment mode")
+  .option("--discount-code <code>", "Discount code for crypto credit top-up invoices")
   .option("--auto-pay", "Automatically send the on-chain payment from the local wallet", false)
   .option("--private-key <hex>", "EVM private key for automatic payment")
   .option("--private-key-file <path>", "File containing the private key for automatic payment")
@@ -561,6 +562,7 @@ program
       amount: Number(options.amount),
       baseUrl: options.baseUrl,
       payCurrency: options.payCurrency,
+      discountCode: options.discountCode,
       autoPay: Boolean(options.autoPay),
       privateKey: options.privateKey,
       privateKeyFile: options.privateKeyFile,

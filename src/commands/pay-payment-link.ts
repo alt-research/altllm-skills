@@ -11,8 +11,11 @@ import {
 } from "../lib/wallet.js";
 import {
   fetchPaymentLinkStatus,
+  formatPaymentDiscountFields,
   formatPaymentLinkRecord,
   isTerminalPaymentLinkStatus,
+  normalizeAllowedPayCurrencies,
+  validateDiscountPayCurrency,
   validatePaymentPollingOptions,
   waitForPaymentLinkSettlement,
 } from "./topup-crypto.js";
@@ -66,6 +69,12 @@ export async function payPaymentLink(options: PayPaymentLinkOptions): Promise<vo
     );
   }
 
+  validateDiscountPayCurrency({
+    discountCode: link.promo_code ?? null,
+    payCurrency: link.pay_currency,
+    allowedPayCurrencies: normalizeAllowedPayCurrencies(link),
+  });
+
   const privateKey = await resolvePrivateKey({
     explicit: options.privateKey,
     filePath: options.privateKeyFile,
@@ -111,6 +120,7 @@ export async function payPaymentLink(options: PayPaymentLinkOptions): Promise<vo
           payAddress: settledLink.pay_address ?? link.pay_address ?? null,
           payAmount: settledLink.pay_amount ?? link.pay_amount ?? null,
           payCurrency: settledLink.pay_currency ?? link.pay_currency ?? null,
+          ...formatPaymentDiscountFields(settledLink, link),
         }),
         txHash: payment.txHash,
         chainId: payment.chainId,

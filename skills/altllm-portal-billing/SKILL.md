@@ -30,6 +30,7 @@ Balance, promo, transaction history, and usage analytics for the local `altllm` 
 
 - These commands use the saved Portal session token.
 - History commands mostly return raw Portal API JSON.
+- `credit` is the current CLI inspection path for plan/model-access metadata returned by Portal, including Business/Flex fields such as `subscription_tier: "flex"` when present.
 - `transactions` supports `--page`, `--limit`, and `--type`.
 - `usage-summary` currently reflects the current calendar month only.
 - `usage-timeline` and `usage-by-model` support either `--month` or a complete explicit date range.

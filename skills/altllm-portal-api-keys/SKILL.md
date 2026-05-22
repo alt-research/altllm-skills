@@ -29,6 +29,7 @@ Portal API key lifecycle management for the local `altllm` CLI.
 - `create-api-key` returns the full key only once.
 - If no model allowlist is passed, the Portal API applies its default AltLLM model set.
 - Key permissions narrow accessible models, but gateway balance and tier checks still apply.
+- Flex users can allowlist normal AltLLM models and Flex-only `altllm-flex-*` models; backend access checks remain authoritative.
 - `update-api-key --status disabled` is reversible.
 - `revoke-api-key` is permanent.
 

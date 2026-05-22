@@ -9,6 +9,8 @@ node dist/cli.js credit \
   --base-url https://platform-api.altllm.ai
 ```
 
+`credit` passes through plan/model-access metadata when Portal returns it. Use it to inspect Personal tiers (`free`, `basic`, `pro`, `power`) or Business/Flex (`subscription_tier: "flex"`) status and allowed models. Flex can include normal AltLLM models plus Flex-only IDs such as `altllm-flex-gpt-5.5`, `altllm-flex-opus-4.7`, and `altllm-flex-gemini-3.1`, subject to backend access checks.
+
 ### Redeem promo
 
 ```bash
@@ -75,6 +77,7 @@ node dist/cli.js usage-by-key \
 ## Notes
 
 - `credit` and `redeem-promo` pass through the API response body unchanged.
+- This repo does not implement plan billing logic or bypass Portal/Gateway model-access checks.
 - Transaction history and usage analytics are useful for validating gateway metering behavior.
 - `usage-timeline` and `usage-by-model` accept either `--month` or a complete `--start-date` / `--end-date` range, but not both.
 - `usage-by-key` requires both `--start-date` and `--end-date`.

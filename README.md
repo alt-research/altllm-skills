@@ -284,6 +284,18 @@ node dist/cli.js create-api-key \
   --model altllm-standard
 ```
 
+Create a Flex-aware key allowlist:
+
+```bash
+node dist/cli.js create-api-key \
+  --base-url https://platform-api.altllm.ai \
+  --name "Flex Agent" \
+  --model altllm-standard \
+  --model altllm-flex-gpt-5.5 \
+  --model altllm-flex-opus-4.7 \
+  --model altllm-flex-gemini-3.1
+```
+
 Inspect one key:
 
 ```bash
@@ -331,6 +343,7 @@ Notes:
 - `create-api-key` returns the full `key` only once. Save it securely.
 - If you do not pass `--model` or `--models`, the Portal API uses its default model allowlist for new keys.
 - Key permissions are an allowlist, but gateway balance checks and subscription-tier model access still apply.
+- Model validation accepts any model ID with the `altllm-` prefix, including Flex-only IDs such as `altllm-flex-gpt-5.5`.
 
 Use the returned API key against the AltLLM OpenAI-compatible gateway:
 
@@ -352,6 +365,15 @@ Check Portal balance:
 node dist/cli.js credit \
   --base-url https://platform-api.altllm.ai
 ```
+
+The balance response is passed through unchanged. When the Portal API includes plan fields such as `subscription_tier`, `allowed_models`, or related model-access metadata, use this command to inspect whether the account is on Business/Flex (`subscription_tier: "flex"`) and which models the backend currently allows.
+
+AltLLM plan families:
+
+- Personal: `free`, `basic`, `pro`, `power`
+- Business: `flex`
+
+Flex is pay-per-use. Flex accounts can use normal AltLLM models and may also use Flex-only native models such as `altllm-flex-gpt-5.5`, `altllm-flex-opus-4.7`, and `altllm-flex-gemini-3.1`, subject to backend access checks.
 
 Redeem a promo code:
 
@@ -421,6 +443,16 @@ node dist/cli.js topup-crypto \
   --amount 25
 ```
 
+Create a discounted direct payment link:
+
+```bash
+node dist/cli.js topup-crypto \
+  --base-url https://platform-api.altllm.ai \
+  --amount 100 \
+  --pay-currency sol \
+  --discount-code SOLANA
+```
+
 Create a direct payment link and auto-pay it:
 
 ```bash
@@ -464,6 +496,11 @@ Direct `--private-key` usage now requires `--allow-unsafe-private-key-argv`.
 - All commands print machine-readable JSON to stdout.
 - API key management commands return raw Portal API JSON.
 - History commands return raw Portal API JSON.
+- `topup-crypto --discount-code <code>` applies a discount code when creating a credit top-up invoice.
+- Discount metadata returned by Portal payment-link endpoints is printed in payment command JSON output as `discountCode`, `originalAmount`, `discountPercent`, `discountAmount`, `finalAmount`, and `allowedPayCurrencies`.
+- Discount codes on `topup-crypto` are for credit top-ups, not subscriptions.
+- Discount-code top-ups are previewed before the CLI creates a payment link. If Portal returns exactly one allowed token, the CLI uses it automatically; if multiple tokens are allowed, pass one with `--pay-currency`.
+- Token-scoped discount codes are guarded client-side when Portal returns `allowedPayCurrencies`: mismatched `--pay-currency` values fail clearly before payment-link creation.
 - `pay-payment-link --wait` prints one final JSON document.
 - The CLI does not silently downgrade from direct payment mode to hosted checkout mode.
 - Terminal payment-link statuses such as `completed`, `expired`, `failed`, and `deactivated` are rejected before direct payment is sent.
