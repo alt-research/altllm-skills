@@ -77,6 +77,66 @@ The login helper uses the external-signature flow (`login-wallet --prepare`, loc
 
 Production uses `https://platform-api.altllm.ai`, but run production only as a smoke test unless stress testing is explicitly approved.
 
+## Reusable Multi-User Smoke
+
+After the users are logged in, run the reusable smoke suite:
+
+```bash
+npm run smoke:multi-user -- \
+  --base-url https://altllm-portal-api.alt.technology \
+  --wallets .altllm-e2e/staging/wallets.public.json \
+  --include-payment-links
+```
+
+For production, omit `--include-payment-links` unless payment-link creation has
+been explicitly approved:
+
+```bash
+npm run smoke:multi-user -- \
+  --base-url https://platform-api.altllm.ai \
+  --wallets .altllm-e2e/prod/wallets.public.json
+```
+
+The suite:
+
+- uses each user's saved `sessionFile`
+- runs the read-command matrix
+- creates, renames, disables, enables, and revokes temporary API keys
+- verifies cross-user API-key isolation
+- runs concurrent read bursts
+- optionally creates hosted payment links and verifies owner/isolation behavior
+
+It never reads private keys, never prints session tokens or generated API-key
+secrets, never uses `--auto-pay`, and never sends on-chain transactions.
+
+### Model Usage And Billing E2E
+
+Use this when validating that a real gateway model call flows through Portal
+usage and billing:
+
+```bash
+read -r -s PORTAL_TOKEN
+export PORTAL_TOKEN
+npm run e2e:model-billing -- \
+  --base-url https://altllm-portal-api.alt.technology \
+  --gateway-url https://altllm-api.alt.technology \
+  --portal-token-env PORTAL_TOKEN \
+  --model altllm-native-fast
+unset PORTAL_TOKEN
+```
+
+The suite:
+
+- creates one temporary Portal API key
+- calls the OpenAI-compatible gateway with a tiny capped chat completion
+- polls `usage-by-key`, `usage-by-model`, `usage-summary`, `credit`, and usage transactions
+- requires new model usage, key usage, and billing evidence before passing
+- revokes the temporary API key unless `--keep-key` is passed
+
+It is staging-first and refuses production-looking URLs unless
+`--allow-non-staging` is passed. Keep the default `--max-tokens` low and leave
+`--max-balance-delta-usd` in place so the test stays cheap.
+
 ## Environment Matrix
 
 Staging should run the full suite:
@@ -85,6 +145,7 @@ Staging should run the full suite:
 - all read commands
 - API key create/get/update/revoke
 - payment-link creation
+- model usage and billing E2E with one funded staging session
 - discount-code preview and guardrails
 - concurrency and stress tests
 
@@ -96,7 +157,8 @@ Production should run smoke tests only:
 - a small number of payment-link creations
 - discount-code preview behavior
 
-Do not run production stress, mass payment-link creation, or real on-chain payment without explicit approval.
+Do not run production stress, mass payment-link creation, model billing E2E, or
+real on-chain payment without explicit approval.
 
 ## Functional Test Matrix
 
