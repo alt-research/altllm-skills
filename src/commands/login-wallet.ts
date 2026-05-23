@@ -4,6 +4,7 @@ import {
   normalizeWalletSignature,
   resolvePrivateKey,
   signChallengeMessage,
+  validateUnsafePrivateKeyArgvUsage,
 } from "../lib/wallet.js";
 
 interface CryptoChallengeResponse {

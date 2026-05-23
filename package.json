@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/cli.ts",
+    "prepare:test-wallets": "node scripts/prepare-test-wallets.mjs",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
