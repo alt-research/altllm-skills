@@ -81,6 +81,19 @@ Run locally with:
 node dist/cli.js <command> [options]
 ```
 
+Run the multi-user staging smoke suite after preparing wallets and logging them
+in:
+
+```bash
+npm run smoke:multi-user -- \
+  --base-url https://altllm-portal-api.alt.technology \
+  --wallets .altllm-e2e/staging/wallets.public.json \
+  --include-payment-links
+```
+
+The smoke suite uses existing session files from the public wallet registry. It
+does not read private keys, does not auto-pay, and prints a JSON summary.
+
 ## Available Skills
 
 | Skill | Purpose | Use When |

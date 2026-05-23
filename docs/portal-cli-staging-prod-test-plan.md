@@ -77,6 +77,38 @@ The login helper uses the external-signature flow (`login-wallet --prepare`, loc
 
 Production uses `https://platform-api.altllm.ai`, but run production only as a smoke test unless stress testing is explicitly approved.
 
+## Reusable Multi-User Smoke
+
+After the users are logged in, run the reusable smoke suite:
+
+```bash
+npm run smoke:multi-user -- \
+  --base-url https://altllm-portal-api.alt.technology \
+  --wallets .altllm-e2e/staging/wallets.public.json \
+  --include-payment-links
+```
+
+For production, omit `--include-payment-links` unless payment-link creation has
+been explicitly approved:
+
+```bash
+npm run smoke:multi-user -- \
+  --base-url https://platform-api.altllm.ai \
+  --wallets .altllm-e2e/prod/wallets.public.json
+```
+
+The suite:
+
+- uses each user's saved `sessionFile`
+- runs the read-command matrix
+- creates, renames, disables, enables, and revokes temporary API keys
+- verifies cross-user API-key isolation
+- runs concurrent read bursts
+- optionally creates hosted payment links and verifies owner/isolation behavior
+
+It never reads private keys, never prints session tokens or generated API-key
+secrets, never uses `--auto-pay`, and never sends on-chain transactions.
+
 ## Environment Matrix
 
 Staging should run the full suite:

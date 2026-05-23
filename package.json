@@ -7,6 +7,7 @@
     "dev": "tsx src/cli.ts",
     "login:test-wallets": "node scripts/login-test-wallets.mjs",
     "prepare:test-wallets": "node scripts/prepare-test-wallets.mjs",
+    "smoke:multi-user": "node scripts/run-multi-user-smoke.mjs",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
