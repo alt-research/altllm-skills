@@ -1,0 +1,48 @@
+{
+  "warning": "Public wallet addresses only. Private keys are not stored in git; use local .altllm-e2e files or GitHub encrypted secrets.",
+  "createdFor": "Portal CLI staging/prod validation",
+  "staging": [
+    {
+      "name": "staging-user1",
+      "address": "0x41AC65C04cC9a9f7ae1A4BBB6D5Ba3CFC3D9cBdb",
+      "privateKeySecret": "ALTLLM_STAGING_E2E_USER_1_PRIVATE_KEY"
+    },
+    {
+      "name": "staging-user2",
+      "address": "0xaA51aC92DC4437c285F86192c31581CdBbad53f1",
+      "privateKeySecret": "ALTLLM_STAGING_E2E_USER_2_PRIVATE_KEY"
+    },
+    {
+      "name": "staging-user3",
+      "address": "0x49013b4A1D44CBca508F4D1e81d4f339cE7E7cC1",
+      "privateKeySecret": "ALTLLM_STAGING_E2E_USER_3_PRIVATE_KEY"
+    },
+    {
+      "name": "staging-user4",
+      "address": "0xdD07D8A25E3FCeA9267b8b4B2C481bf23CE36A12",
+      "privateKeySecret": "ALTLLM_STAGING_E2E_USER_4_PRIVATE_KEY"
+    }
+  ],
+  "prod": [
+    {
+      "name": "prod-user1",
+      "address": "0xdA591B615Ca2eB0f4739E8be5A4a950472440aE7",
+      "privateKeySecret": "ALTLLM_PROD_E2E_USER_1_PRIVATE_KEY"
+    },
+    {
+      "name": "prod-user2",
+      "address": "0x80A4ec83D1A07bC1E7a5cfA99a9747A32416Dd8a",
+      "privateKeySecret": "ALTLLM_PROD_E2E_USER_2_PRIVATE_KEY"
+    },
+    {
+      "name": "prod-user3",
+      "address": "0x7aD96CE936917Cf227cE462E7B3114F217E03Db8",
+      "privateKeySecret": "ALTLLM_PROD_E2E_USER_3_PRIVATE_KEY"
+    },
+    {
+      "name": "prod-user4",
+      "address": "0xAc17909f04b3dF0c7F66161b59Daa60EE1281927",
+      "privateKeySecret": "ALTLLM_PROD_E2E_USER_4_PRIVATE_KEY"
+    }
+  ]
+}
