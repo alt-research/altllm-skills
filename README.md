@@ -94,6 +94,25 @@ npm run smoke:multi-user -- \
 The smoke suite uses existing session files from the public wallet registry. It
 does not read private keys, does not auto-pay, and prints a JSON summary.
 
+Run the controlled model usage and billing E2E with a funded staging Portal
+session or Portal cookie token:
+
+```bash
+read -r -s PORTAL_TOKEN
+export PORTAL_TOKEN
+npm run e2e:model-billing -- \
+  --base-url https://altllm-portal-api.alt.technology \
+  --gateway-url https://altllm-api.alt.technology \
+  --portal-token-env PORTAL_TOKEN \
+  --model altllm-native-fast
+unset PORTAL_TOKEN
+```
+
+The model billing E2E is intentionally opt-in because it makes one real gateway
+request. By default it refuses production-looking URLs, caps the observed
+balance delta, creates a temporary API key, waits for Portal usage and billing
+evidence, revokes the key, and prints a redacted JSON report.
+
 ## Available Skills
 
 | Skill | Purpose | Use When |
