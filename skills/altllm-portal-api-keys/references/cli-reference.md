@@ -19,6 +19,18 @@ node dist/cli.js create-api-key \
   --model altllm-standard
 ```
 
+Flex example:
+
+```bash
+node dist/cli.js create-api-key \
+  --base-url https://platform-api.altllm.ai \
+  --name "Flex Agent" \
+  --model altllm-standard \
+  --model altllm-flex-gpt-5.5 \
+  --model altllm-flex-opus-4.7 \
+  --model altllm-flex-gemini-3.1
+```
+
 Representative stdout:
 
 ```json
@@ -65,4 +77,6 @@ node dist/cli.js revoke-api-key \
 ## Notes
 
 - Keys created through Portal are for the AltLLM OpenAI-compatible gateway at `https://api.altllm.ai/v1`.
+- The CLI accepts `altllm-flex-*` model IDs because API-key model validation only requires the `altllm-` prefix.
+- Flex model access is still enforced by Portal/Gateway account checks.
 - `get-api-key`, `update-api-key`, and `revoke-api-key` are currently blocked by a known production backend issue on the single-key Portal routes.

@@ -27,6 +27,10 @@ Payment-link creation, settlement polling, and direct wallet payment flows for t
 - Unsupported `pay_currency` values must fail fast.
 - `pay-payment-link` must not pay terminal links (`completed`, `expired`, `failed`, `deactivated`).
 - Do not silently downgrade from direct payment to hosted checkout.
+- `topup-crypto --discount-code <code>` is for discounted credit top-up invoices, not subscriptions.
+- Discount-code top-ups should be previewed before payment-link creation so a single allowed token can be selected automatically.
+- Token-scoped discount codes must respect Portal-returned `allowedPayCurrencies`.
+- Payment command JSON should surface discount metadata returned by the Portal API.
 - `pay-payment-link --wait` should emit one final JSON document.
 - `payment-status` and `pay-payment-link` currently depend on the newest `100` records from `GET /api/billing/payment-links?limit=100`.
 - Older payment links are not reachable from these CLI flows until the backend exposes per-link lookup or older-page pagination.

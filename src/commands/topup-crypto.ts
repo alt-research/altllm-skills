@@ -15,6 +15,7 @@ export interface TopupCryptoOptions {
   baseUrl?: string;
   redirectUrl?: string;
   payCurrency?: string;
+  discountCode?: string;
   autoPay?: boolean;
   privateKey?: string;
   privateKeyFile?: string;
@@ -27,7 +28,18 @@ export interface TopupCryptoOptions {
   allowTokenHostMismatch?: boolean;
 }
 
-interface CreatePaymentLinkResponse {
+type DiscountNumber = number | string | null;
+
+interface PaymentDiscountFields {
+  promo_code?: string | null;
+  original_amount?: DiscountNumber;
+  discount_percent?: DiscountNumber;
+  discount_amount?: DiscountNumber;
+  final_amount?: DiscountNumber;
+  allowed_pay_currencies?: string[] | null;
+}
+
+interface CreatePaymentLinkResponse extends PaymentDiscountFields {
   payment_link_id: string;
   url: string | null;
   amount: number | string;
@@ -40,7 +52,7 @@ interface CreatePaymentLinkResponse {
   pay_currency?: string | null;
 }
 
-interface PaymentLinkRecord {
+interface PaymentLinkRecord extends PaymentDiscountFields {
   id: string;
   amount: number;
   currency: string;
@@ -60,12 +72,188 @@ interface PaymentLinksResponse {
   payment_links: PaymentLinkRecord[];
 }
 
+interface TopupDiscountPreviewResponse {
+  code: string;
+  original_amount: DiscountNumber;
+  discount_percent: DiscountNumber;
+  max_discount_amount?: DiscountNumber;
+  discount_amount: DiscountNumber;
+  final_amount: DiscountNumber;
+  allowed_pay_currencies: string[];
+  selected_pay_currency?: string | null;
+  validation_status?: string;
+  message?: string;
+  payment_link_id?: string | null;
+  payment_link_url?: string | null;
+}
+
 const TERMINAL_STATUSES = new Set(["completed", "expired", "failed", "deactivated"]);
 const PAYMENT_LINK_LOOKUP_LIMIT = 100;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+function normalizeOptionalNonEmptyOption(
+  value: string | undefined,
+  optionName: string
+): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    throw new CliError(`${optionName} cannot be empty.`);
+  }
+
+  return trimmed;
+}
+
+function normalizeOptionalPayCurrency(value: string | undefined): string | undefined {
+  return normalizeOptionalNonEmptyOption(value, "--pay-currency")?.toLowerCase();
+}
+
+function normalizeOptionalDiscountCode(value: string | undefined): string | undefined {
+  return normalizeOptionalNonEmptyOption(value, "--discount-code");
+}
+
+export function normalizeAllowedPayCurrencies(
+  fields: PaymentDiscountFields
+): string[] {
+  return Array.from(
+    new Set(
+      (fields.allowed_pay_currencies ?? [])
+        .map((currency) => currency.trim().toLowerCase())
+        .filter((currency) => currency.length > 0)
+    )
+  );
+}
+
+function formatCurrencyList(currencies: string[]): string {
+  return currencies.join(", ");
+}
+
+export function validateDiscountPayCurrency(params: {
+  discountCode?: string | null;
+  payCurrency?: string | null;
+  allowedPayCurrencies: string[];
+}): void {
+  if (!params.discountCode || params.allowedPayCurrencies.length === 0) {
+    return;
+  }
+
+  const allowedPayCurrencies = params.allowedPayCurrencies.map((currency) =>
+    currency.toLowerCase()
+  );
+  const payCurrency = params.payCurrency?.trim().toLowerCase();
+
+  if (payCurrency) {
+    if (!allowedPayCurrencies.includes(payCurrency)) {
+      throw new CliError(
+        `Discount code ${params.discountCode} can only be used with: ${formatCurrencyList(allowedPayCurrencies)}.`
+      );
+    }
+    return;
+  }
+}
+
+async function previewTopupDiscountCode(params: {
+  baseUrl: string;
+  token: string;
+  amount: number;
+  discountCode: string;
+}): Promise<TopupDiscountPreviewResponse> {
+  return requestJson<TopupDiscountPreviewResponse>({
+    method: "POST",
+    url: `${params.baseUrl}/api/billing/topup-promo/preview`,
+    token: params.token,
+    body: {
+      code: params.discountCode,
+      amount: params.amount,
+    },
+  });
+}
+
+async function resolveDiscountPayCurrency(params: {
+  baseUrl: string;
+  token: string;
+  amount: number;
+  discountCode?: string;
+  payCurrency?: string;
+}): Promise<string | undefined> {
+  if (!params.discountCode) {
+    return params.payCurrency;
+  }
+
+  const preview = await previewTopupDiscountCode({
+    baseUrl: params.baseUrl,
+    token: params.token,
+    amount: params.amount,
+    discountCode: params.discountCode,
+  });
+  const discountCode = preview.code || params.discountCode;
+  const allowedPayCurrencies = normalizeAllowedPayCurrencies(preview);
+
+  if (allowedPayCurrencies.length === 0) {
+    throw new CliError(
+      `Discount code ${discountCode} did not return allowed payment currencies. Re-run with --pay-currency after verifying the code in Portal.`
+    );
+  }
+
+  if (params.payCurrency) {
+    validateDiscountPayCurrency({
+      discountCode,
+      payCurrency: params.payCurrency,
+      allowedPayCurrencies,
+    });
+    return params.payCurrency;
+  }
+
+  const selectedPayCurrency = preview.selected_pay_currency?.trim().toLowerCase();
+  if (
+    selectedPayCurrency &&
+    allowedPayCurrencies.includes(selectedPayCurrency)
+  ) {
+    return selectedPayCurrency;
+  }
+
+  if (allowedPayCurrencies.length === 1) {
+    return allowedPayCurrencies[0];
+  }
+
+  if (allowedPayCurrencies.length > 1) {
+    throw new CliError(
+      `Discount code ${discountCode} can be used with: ${formatCurrencyList(allowedPayCurrencies)}. Re-run with --pay-currency <ticker>.`
+    );
+  }
+
+  throw new CliError(`Unable to resolve pay currency for discount code ${discountCode}.`);
+}
+
+export function formatPaymentDiscountFields(
+  primary: PaymentDiscountFields,
+  fallback?: PaymentDiscountFields
+): {
+  discountCode: string | null;
+  originalAmount: DiscountNumber;
+  discountPercent: DiscountNumber;
+  discountAmount: DiscountNumber;
+  finalAmount: DiscountNumber;
+  allowedPayCurrencies: string[] | null;
+} {
+  return {
+    discountCode: primary.promo_code ?? fallback?.promo_code ?? null,
+    originalAmount: primary.original_amount ?? fallback?.original_amount ?? null,
+    discountPercent: primary.discount_percent ?? fallback?.discount_percent ?? null,
+    discountAmount: primary.discount_amount ?? fallback?.discount_amount ?? null,
+    finalAmount: primary.final_amount ?? fallback?.final_amount ?? null,
+    allowedPayCurrencies:
+      primary.allowed_pay_currencies ?? fallback?.allowed_pay_currencies ?? null,
+  };
+}
+
+type FormattedPaymentDiscountFields = ReturnType<typeof formatPaymentDiscountFields>;
 
 export function validatePaymentPollingOptions(params: {
   pollIntervalSeconds: number;
@@ -107,13 +295,15 @@ export function isTerminalPaymentLinkStatus(status: string): boolean {
 
 export function formatPaymentLinkRecord(
   link: PaymentLinkRecord,
-  overrides: Partial<{
-    paymentId: string | null;
-    paymentStatus: string | null;
-    payAddress: string | null;
-    payAmount: string | number | null;
-    payCurrency: string | null;
-  }> = {}
+  overrides: Partial<
+    {
+      paymentId: string | null;
+      paymentStatus: string | null;
+      payAddress: string | null;
+      payAmount: string | number | null;
+      payCurrency: string | null;
+    } & FormattedPaymentDiscountFields
+  > = {}
 ): Record<string, unknown> {
   return {
     paymentLinkId: link.id,
@@ -129,6 +319,7 @@ export function formatPaymentLinkRecord(
     payAddress: link.pay_address ?? null,
     payAmount: link.pay_amount ?? null,
     payCurrency: link.pay_currency ?? null,
+    ...formatPaymentDiscountFields(link),
     ...overrides,
   };
 }
@@ -202,16 +393,40 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
       allowTokenHostMismatch: options.allowTokenHostMismatch,
     })
   );
+  const payCurrency = normalizeOptionalPayCurrency(options.payCurrency);
+  const discountCode = normalizeOptionalDiscountCode(options.discountCode);
+  const resolvedPayCurrency = await resolveDiscountPayCurrency({
+    baseUrl,
+    token: session.token,
+    amount: options.amount,
+    discountCode,
+    payCurrency,
+  });
+
+  const body: Record<string, unknown> = {
+    amount: options.amount,
+  };
+  if (options.redirectUrl !== undefined) {
+    body.redirect_url = options.redirectUrl;
+  }
+  if (resolvedPayCurrency !== undefined) {
+    body.pay_currency = resolvedPayCurrency;
+  }
+  if (discountCode !== undefined) {
+    body.promo_code = discountCode;
+  }
 
   const created = await requestJson<CreatePaymentLinkResponse>({
     method: "POST",
     url: `${baseUrl}/api/billing/payment-link`,
     token: session.token,
-    body: {
-      amount: options.amount,
-      redirect_url: options.redirectUrl,
-      pay_currency: options.payCurrency,
-    },
+    body,
+  });
+  const createdDiscountCode = created.promo_code ?? discountCode ?? null;
+  validateDiscountPayCurrency({
+    discountCode: createdDiscountCode,
+    payCurrency: created.pay_currency ?? resolvedPayCurrency ?? null,
+    allowedPayCurrencies: normalizeAllowedPayCurrencies(created),
   });
 
   const initial = {
@@ -226,6 +441,7 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
     payAddress: created.pay_address ?? null,
     payAmount: created.pay_amount ?? null,
     payCurrency: created.pay_currency ?? null,
+    ...formatPaymentDiscountFields(created),
   };
 
   if (options.autoPay) {
@@ -263,6 +479,12 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
     pollIntervalSeconds: options.pollIntervalSeconds,
     timeoutSeconds: options.timeoutSeconds,
   });
+  validateDiscountPayCurrency({
+    discountCode: link.promo_code ?? createdDiscountCode,
+    payCurrency:
+      link.pay_currency ?? created.pay_currency ?? resolvedPayCurrency ?? null,
+    allowedPayCurrencies: normalizeAllowedPayCurrencies(link),
+  });
 
   process.stdout.write(
     `${JSON.stringify(
@@ -274,6 +496,7 @@ export async function topupCrypto(options: TopupCryptoOptions): Promise<void> {
           payAddress: link.pay_address ?? created.pay_address ?? null,
           payAmount: link.pay_amount ?? created.pay_amount ?? null,
           payCurrency: link.pay_currency ?? created.pay_currency ?? null,
+          ...formatPaymentDiscountFields(link, created),
         }),
       },
       null,
