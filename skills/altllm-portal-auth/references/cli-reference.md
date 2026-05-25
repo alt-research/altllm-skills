@@ -25,12 +25,22 @@ Representative stdout:
 }
 ```
 
-Safer key input paths:
+Local private-key input options:
 
+- `ALTLLM_WALLET_PRIVATE_KEY=<private-key>` with the default `--private-key-env ALTLLM_WALLET_PRIVATE_KEY`
 - `--private-key-env <ENV_NAME>`
 - `--private-key-file <path>`
+- `--private-key <hex>` with `--allow-unsafe-private-key-argv`
 
-Direct `--private-key` usage now requires `--allow-unsafe-private-key-argv`.
+Direct `--private-key` usage requires `--allow-unsafe-private-key-argv` because command-line arguments can leak through shell history and process listings:
+
+```bash
+node dist/cli.js login-wallet \
+  --base-url https://platform-api.altllm.ai \
+  --wallet-address 0x... \
+  --private-key <hex-private-key> \
+  --allow-unsafe-private-key-argv
+```
 
 ### Prepare challenge for external signing
 
