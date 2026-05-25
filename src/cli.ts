@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { createRequire } from "node:module";
+
 import { Command } from "commander";
 
 import { createApiKey } from "./commands/create-api-key.js";
@@ -32,6 +34,9 @@ import { usageSummary } from "./commands/usage-summary.js";
 import { usageTimeline } from "./commands/usage-timeline.js";
 import { CliError } from "./lib/api.js";
 import { DEFAULT_SESSION_FILE } from "./lib/session.js";
+
+const require = createRequire(import.meta.url);
+const packageJson = require("../package.json") as { version: string };
 
 const program = new Command();
 const DEFAULT_CLOUD_CLAW_BASE_URL =
@@ -79,6 +84,7 @@ function parseBooleanOption(value: string, optionName: string): boolean {
 
 program
   .name("altllm")
+  .version(packageJson.version)
   .description("CLI for AltLLM Portal auth, API key management, billing, and payments");
 
 program
