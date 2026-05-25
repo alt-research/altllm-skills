@@ -1,6 +1,6 @@
 ---
 name: cloud-claw-launch-agent
-description: Use this skill when the user wants to launch a new AltClaw, OpenClaw, PicoClaw, or Ottie deployment through Cloud Claw. Covers the same user-facing fields and constraints exposed in the Cloud Claw UI, using the local altllm cloud-claw commands. Do NOT use for post-launch lifecycle tasks like start/stop/delete/logs — use cloud-claw-manage-vm.
+description: Use this skill when the user wants to launch a new AltClaw, OpenClaw, PicoClaw, or Ottie deployment through Cloud Claw. Covers the same user-facing fields and constraints exposed in the Cloud Claw UI, using the local altllm cloud-claw-* commands. Do NOT use for post-launch lifecycle tasks like start/stop/delete/logs; use cloud-claw-manage-vm.
 user-invocable: true
 ---
 

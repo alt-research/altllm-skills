@@ -73,7 +73,7 @@ export ALTLLM_STAGING_E2E_USER_4_PRIVATE_KEY=0x...
 bash .altllm-e2e/staging/login-commands.sh
 ```
 
-The login helper uses the external-signature flow (`login-wallet --prepare`, local message signing, then `login-wallet --signature`) so it works against staging without weakening the CLI guardrail that blocks automatic private-key signing on non-production HTTPS hosts.
+The login helper uses the external-signature flow (`login-wallet --prepare`, local message signing, then `login-wallet --nonce <nonce> --signature <signature>`) so it works against staging without weakening the CLI guardrail that blocks automatic private-key signing on non-production HTTPS hosts.
 
 Production uses `https://platform-api.altllm.ai`, but run production only as a smoke test unless stress testing is explicitly approved.
 
@@ -88,13 +88,20 @@ npm run smoke:multi-user -- \
   --include-payment-links
 ```
 
-For production, omit `--include-payment-links` unless payment-link creation has
-been explicitly approved:
+The current multi-user smoke suite includes single-key API-key lifecycle checks
+(`get-api-key`, `update-api-key`, and `revoke-api-key`). While the known
+production single-key route limitation is present, keep this full suite on
+staging. For production, run only read/list checks manually unless those routes
+have been confirmed healthy; also omit payment-link creation unless it has been
+explicitly approved:
 
 ```bash
-npm run smoke:multi-user -- \
-  --base-url https://platform-api.altllm.ai \
-  --wallets .altllm-e2e/prod/wallets.public.json
+BASE_URL=https://platform-api.altllm.ai
+SESSION=.altllm-e2e/prod/sessions/prod-user1.session.json
+node dist/cli.js credit --base-url "$BASE_URL" --session-file "$SESSION"
+node dist/cli.js transactions --base-url "$BASE_URL" --session-file "$SESSION"
+node dist/cli.js usage-summary --base-url "$BASE_URL" --session-file "$SESSION"
+node dist/cli.js list-api-keys --base-url "$BASE_URL" --session-file "$SESSION"
 ```
 
 The suite:
@@ -153,7 +160,7 @@ Production should run smoke tests only:
 
 - wallet login for four test users
 - read commands
-- API key create/get/update/revoke
+- API key list only while the known single-key route limitation is present
 - a small number of payment-link creations
 - discount-code preview behavior
 
@@ -162,19 +169,24 @@ real on-chain payment without explicit approval.
 
 ## Functional Test Matrix
 
-Run these commands per user with that user's session file:
+Run these commands per user with that user's session file. Set the date range to
+the current UTC month unless the test is intentionally targeting another period:
 
 ```bash
+START_DATE="$(date -u +%Y-%m-01)"
+END_DATE="$(date -u +%F)"
 node dist/cli.js credit --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js transactions --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js usage-summary --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js usage-timeline --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js usage-by-model --base-url "$BASE_URL" --session-file "$SESSION"
-node dist/cli.js usage-by-key --start-date 2026-05-01 --end-date 2026-05-23 --base-url "$BASE_URL" --session-file "$SESSION"
+node dist/cli.js usage-by-key --start-date "$START_DATE" --end-date "$END_DATE" --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js list-api-keys --base-url "$BASE_URL" --session-file "$SESSION"
 ```
 
-API key lifecycle:
+API key lifecycle. Run the full lifecycle in staging. In production, do not
+create temporary keys unless `revoke-api-key` has been confirmed healthy or
+there is an approved cleanup path:
 
 ```bash
 KEY_JSON="$(node dist/cli.js create-api-key --name e2e-smoke --base-url "$BASE_URL" --session-file "$SESSION")"

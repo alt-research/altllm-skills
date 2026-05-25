@@ -53,7 +53,7 @@ Useful inputs by task:
 
 - wallet login:
   - wallet address
-  - either a private key, or an externally produced signature flow
+  - either a private key via `--private-key-env`, `--private-key-file`, or guarded `--private-key`, or an externally produced signature flow
 - API key creation:
   - a key name
   - optional model allowlist
@@ -62,7 +62,7 @@ Useful inputs by task:
 - direct crypto payment:
   - target amount in USD credit
   - chain/pay currency such as `usdcbase`
-  - a funded wallet private key if you want automatic payment
+  - a funded wallet private key via `--private-key-env`, `--private-key-file`, or guarded `--private-key` if you want automatic payment
 - PicoClaw or Ottie deployment:
   - deployment name, or permission to generate one
   - Telegram bot token
@@ -112,7 +112,7 @@ There are a few important constraints worth knowing up front.
   - `update-api-key`
   - `revoke-api-key`
   - list and create still work
-- direct payment is only automatic when a supported `pay_currency` is returned and the wallet has enough on-chain balance
+- direct payment is only automatic when an EVM-compatible supported `pay_currency` is returned and the wallet has enough on-chain balance
 - Base USDC top-ups require actual `USDC` on Base, not just ETH for gas
 - `topup-crypto` currently requires `--amount >= 0.5`
 - payment-link lookup currently only scans the most recent `100` Portal payment links
@@ -120,7 +120,7 @@ There are a few important constraints worth knowing up front.
 
 ## Safe Usage Notes
 
-- prefer environment variables over inline secrets when possible
+- prefer environment variables or local secret files over inline secrets when possible
 - do not paste long-lived private keys unless you intend the agent to use them for that task
 - treat `~/.altllm/portal-cli-session.json` as sensitive local state
 - remember that newly created API keys return the full secret only once

@@ -54,6 +54,7 @@ Known production limitation:
 
 - The current production Portal backend rejects valid key IDs on single-key routes.
 - Expect `get-api-key`, `update-api-key`, and `revoke-api-key` to fail until the backend issue is fixed.
+- Avoid creating temporary production smoke keys while `revoke-api-key` is unavailable unless an approved cleanup path exists.
 
 ### Update key
 

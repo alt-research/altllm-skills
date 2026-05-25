@@ -43,6 +43,7 @@ Portal API key lifecycle management for the local `altllm` CLI.
 - Commands that still work:
   - `list-api-keys`
   - `create-api-key`
+- Do not create temporary production smoke keys unless `revoke-api-key` is healthy or an approved cleanup path exists.
 
 ## Reference
 

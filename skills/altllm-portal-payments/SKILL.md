@@ -34,7 +34,7 @@ Payment-link creation, settlement polling, and direct wallet payment flows for t
 - `pay-payment-link --wait` should emit one final JSON document.
 - `payment-status` and `pay-payment-link` currently depend on the newest `100` records from `GET /api/billing/payment-links?limit=100`.
 - Older payment links are not reachable from these CLI flows until the backend exposes per-link lookup or older-page pagination.
-- Supported direct-payment currencies are:
+- Supported automatic direct-payment currencies are:
   - `eth`
   - `usdterc20`
   - `usdcerc20`

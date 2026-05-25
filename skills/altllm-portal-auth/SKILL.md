@@ -6,7 +6,7 @@ user-invocable: true
 
 # AltLLM Portal Auth
 
- Wallet login and session bootstrap for the local `altllm` CLI, including external signers such as Privy.
+Wallet login and session bootstrap for the local `altllm` CLI, including external signers such as Privy.
 
 ## Shared Setup
 
@@ -18,7 +18,9 @@ user-invocable: true
 
 | Command | Purpose |
 |---|---|
-| `login-wallet` | Sign in with a locally available private key |
+| `login-wallet --private-key-env <name>` | Sign in with a locally available private key from an environment variable |
+| `login-wallet --private-key-file <path>` | Sign in with a locally available private key from a file |
+| `login-wallet --private-key <hex> --allow-unsafe-private-key-argv` | Sign in with an inline private key when argv exposure is explicitly accepted |
 | `login-wallet --prepare` | Fetch a challenge for external signing |
 | `login-wallet --nonce <nonce> --signature <sig>` | Verify an externally signed challenge and save the session |
 | `logout` | Remove the local saved Portal session file |

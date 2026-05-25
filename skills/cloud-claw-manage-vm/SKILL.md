@@ -1,6 +1,6 @@
 ---
 name: cloud-claw-manage-vm
-description: Use this skill when the user wants to view or manage an existing Cloud Claw VM: list deployments, inspect one VM, start, stop, restart, renew, toggle auto-renew, delete, stream logs, or open the dashboard, using the local altllm cloud-claw commands. Do NOT use for creating a brand-new deployment — use cloud-claw-launch-agent.
+description: Use this skill when the user wants to view or manage an existing Cloud Claw VM: list deployments, inspect one VM, start, stop, restart, renew, toggle auto-renew, delete, stream logs, or open the dashboard, using the local altllm cloud-claw-* commands. Do NOT use for creating a brand-new deployment; use cloud-claw-launch-agent.
 user-invocable: true
 ---
 

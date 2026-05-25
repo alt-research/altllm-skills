@@ -1,6 +1,6 @@
 ---
 name: cloud-claw
-description: Use this umbrella skill when the request spans multiple Cloud Claw user-facing domains, especially launching a new AltClaw or OpenClaw VM and then managing lifecycle, logs, renewal, or dashboard access through the local altllm cloud-claw commands in this repository.
+description: Use this umbrella skill when the request spans multiple Cloud Claw user-facing domains, especially launching a new AltClaw or OpenClaw VM and then managing lifecycle, logs, renewal, or dashboard access through the local altllm cloud-claw-* commands in this repository.
 user-invocable: true
 ---
 

@@ -35,7 +35,7 @@ Current commands:
 - `altllm cloud-claw-delete`
 - `altllm cloud-claw-logs`
 
-The CLI targets the AltLLM Portal API, not the OpenAI-compatible gateway.
+Portal commands target the AltLLM Portal API. Cloud Claw commands target Cloud Claw through Portal SSO. The `altllm` CLI commands do not operate the OpenAI-compatible gateway; generated API keys are used there separately.
 
 ## Default Target
 
@@ -78,7 +78,7 @@ Commands that reuse a saved Portal session token, or forward that token to Cloud
 - Keep command output machine-readable JSON.
 - Fail fast on unsupported chains or `pay_currency` values.
 - Do not silently downgrade from direct payment mode to hosted checkout mode.
-- Do not print private keys or persist them outside user-controlled environment variables.
+- Do not print private keys or persist them outside user-controlled environment variables or files.
 
 ## Validation
 
@@ -104,7 +104,8 @@ Example local flow:
 ALTLLM_WALLET_PRIVATE_KEY=<private-key> \
 node dist/cli.js login-wallet \
   --base-url http://localhost:7040 \
-  --wallet-address 0x...
+  --wallet-address 0x... \
+  --private-key-env ALTLLM_WALLET_PRIVATE_KEY
 ```
 
 ## Direct Crypto Payment Constraints
