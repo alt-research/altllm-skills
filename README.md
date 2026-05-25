@@ -53,7 +53,7 @@ Current commands:
 - `altllm cloud-claw-delete`
 - `altllm cloud-claw-logs`
 
-This CLI targets the AltLLM Portal API, not the OpenAI-compatible gateway.
+Portal commands target the AltLLM Portal API. Cloud Claw commands target Cloud Claw through Portal SSO. The `altllm` CLI commands do not operate the OpenAI-compatible gateway; generated API keys are used there separately.
 
 ## Default API
 
@@ -79,10 +79,13 @@ Run locally with:
 
 ```bash
 node dist/cli.js <command> [options]
+node dist/cli.js --version
 ```
 
 Run the multi-user staging smoke suite after preparing wallets and logging them
-in:
+in. This suite includes single-key API-key lifecycle commands (`get-api-key`,
+`update-api-key`, and `revoke-api-key`), so keep it on staging unless those
+production routes are known to be healthy:
 
 ```bash
 npm run smoke:multi-user -- \
@@ -235,7 +238,8 @@ Log in with an EVM wallet:
 ALTLLM_WALLET_PRIVATE_KEY=<private-key> \
 node dist/cli.js login-wallet \
   --base-url https://platform-api.altllm.ai \
-  --wallet-address 0x...
+  --wallet-address 0x... \
+  --private-key-env ALTLLM_WALLET_PRIVATE_KEY
 ```
 
 Successful login stores a session at:
@@ -485,7 +489,7 @@ node dist/cli.js topup-crypto \
   --amount 25
 ```
 
-Create a discounted direct payment link:
+Create a discounted payment link with an explicit pay currency:
 
 ```bash
 node dist/cli.js topup-crypto \
@@ -503,6 +507,7 @@ node dist/cli.js topup-crypto \
   --base-url https://platform-api.altllm.ai \
   --amount 25 \
   --pay-currency usdcbase \
+  --private-key-env ALTLLM_WALLET_PRIVATE_KEY \
   --auto-pay \
   --wait
 ```
@@ -523,15 +528,18 @@ ALTLLM_WALLET_PRIVATE_KEY=<private-key> \
 node dist/cli.js pay-payment-link \
   --base-url https://platform-api.altllm.ai \
   --payment-link-id <id> \
+  --private-key-env ALTLLM_WALLET_PRIVATE_KEY \
   --wait
 ```
 
-Safer wallet private-key input paths for payment commands:
+Wallet private-key input options for payment commands:
 
+- `ALTLLM_WALLET_PRIVATE_KEY=<private-key>` with the default `--private-key-env ALTLLM_WALLET_PRIVATE_KEY`
 - `--private-key-env <ENV_NAME>`
 - `--private-key-file <path>`
+- `--private-key <hex>` with `--allow-unsafe-private-key-argv`
 
-Direct `--private-key` usage now requires `--allow-unsafe-private-key-argv`.
+Direct `--private-key` usage requires `--allow-unsafe-private-key-argv` because command-line arguments can leak through shell history and process listings.
 
 ## Payment Behavior
 
@@ -539,6 +547,7 @@ Direct `--private-key` usage now requires `--allow-unsafe-private-key-argv`.
 - API key management commands return raw Portal API JSON.
 - History commands return raw Portal API JSON.
 - `topup-crypto --discount-code <code>` applies a discount code when creating a credit top-up invoice.
+- `--pay-currency` asks Portal for direct payment fields; `--auto-pay` is limited to the supported EVM-compatible currencies listed below.
 - Discount metadata returned by Portal payment-link endpoints is printed in payment command JSON output as `discountCode`, `originalAmount`, `discountPercent`, `discountAmount`, `finalAmount`, and `allowedPayCurrencies`.
 - Discount codes on `topup-crypto` are for credit top-ups, not subscriptions.
 - Discount-code top-ups are previewed before the CLI creates a payment link. If Portal returns exactly one allowed token, the CLI uses it automatically; if multiple tokens are allowed, pass one with `--pay-currency`.
@@ -554,7 +563,7 @@ Direct `--private-key` usage now requires `--allow-unsafe-private-key-argv`.
 - Non-stream CLI HTTP requests time out after `30000ms` by default.
 - Override this with `ALTLLM_HTTP_TIMEOUT_MS` if you need a different non-stream request timeout.
 
-Supported direct-payment currencies:
+Supported automatic direct-payment currencies:
 
 - `eth`
 - `usdterc20`
@@ -570,7 +579,8 @@ Local Portal API example:
 ALTLLM_WALLET_PRIVATE_KEY=<private-key> \
 node dist/cli.js login-wallet \
   --base-url http://localhost:7040 \
-  --wallet-address 0x...
+  --wallet-address 0x... \
+  --private-key-env ALTLLM_WALLET_PRIVATE_KEY
 ```
 
 ## Repository Layout

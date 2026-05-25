@@ -8,7 +8,8 @@
 ALTLLM_WALLET_PRIVATE_KEY=<private-key> \
 node dist/cli.js login-wallet \
   --base-url https://platform-api.altllm.ai \
-  --wallet-address 0x...
+  --wallet-address 0x... \
+  --private-key-env ALTLLM_WALLET_PRIVATE_KEY
 ```
 
 Representative stdout:
@@ -83,7 +84,7 @@ node dist/cli.js login-wallet \
 - External signers such as Privy work if they can sign the returned challenge message for the supplied wallet address.
 - Local auto-signing validates the returned challenge before signing it.
 - For non-default, non-loopback API hosts, use `--prepare` and sign externally.
-- Safer local private-key input paths are `--private-key-env` and `--private-key-file`.
+- Safer local private-key input paths are `--private-key-env` and `--private-key-file`; guarded inline input is `--private-key <hex> --allow-unsafe-private-key-argv`.
 - The current backend rejects non-EVM address formats.
 - Signature validation is Ethereum-style message recovery on the server.
 

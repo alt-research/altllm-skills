@@ -85,7 +85,7 @@ function parseBooleanOption(value: string, optionName: string): boolean {
 program
   .name("altllm")
   .version(packageJson.version)
-  .description("CLI for AltLLM Portal auth, API key management, billing, and payments");
+  .description("CLI for AltLLM Portal and Cloud Claw operations");
 
 program
   .command("login-wallet")

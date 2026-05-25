@@ -1,7 +1,7 @@
 {
   "name": "altllm-cli",
   "version": "0.1.0",
-  "description": "TS CLI for AltLLM Portal auth, API key management, billing, and payments",
+  "description": "TS CLI for AltLLM Portal and Cloud Claw operations",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/cli.ts",
