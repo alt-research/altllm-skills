@@ -1,5 +1,5 @@
 import { requestJson } from "../lib/api.js";
-import { appendRequiredDateRangeParams } from "../lib/history.js";
+import { appendRequiredDateRangeOrMonthParams } from "../lib/history.js";
 import { resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -8,14 +8,16 @@ export interface UsageByKeyOptions {
   sessionFile: string;
   startDate?: string;
   endDate?: string;
+  month?: string;
   allowTokenHostMismatch?: boolean;
 }
 
 export async function usageByKey(options: UsageByKeyOptions): Promise<void> {
   const searchParams = new URLSearchParams();
-  appendRequiredDateRangeParams(searchParams, {
+  appendRequiredDateRangeOrMonthParams(searchParams, {
     startDate: options.startDate,
     endDate: options.endDate,
+    month: options.month,
   });
 
   const { baseUrl, token } = await resolvePortalContext({

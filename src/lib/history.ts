@@ -18,6 +18,19 @@ function normalizeMonth(value: string): string {
   return month;
 }
 
+function monthToDateRange(value: string): { startDate: string; endDate: string } {
+  const month = normalizeMonth(value);
+  const [yearText, monthText] = month.split("-");
+  const year = Number(yearText);
+  const monthNumber = Number(monthText);
+  const lastDay = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
+
+  return {
+    startDate: `${month}-01`,
+    endDate: `${month}-${String(lastDay).padStart(2, "0")}`,
+  };
+}
+
 function normalizeDate(value: string, label: string): string {
   const date = value.trim();
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
@@ -122,6 +135,36 @@ export function appendRequiredDateRangeParams(
 
   if (hasStartDate !== hasEndDate) {
     throw new CliError("Provide both --start-date and --end-date.");
+  }
+
+  appendDateRangeParams(searchParams, params);
+}
+
+export function appendRequiredDateRangeOrMonthParams(
+  searchParams: URLSearchParams,
+  params: { startDate?: string; endDate?: string; month?: string }
+): void {
+  const hasMonth = params.month !== undefined;
+  const hasStartDate = params.startDate !== undefined;
+  const hasEndDate = params.endDate !== undefined;
+
+  if (hasMonth && (hasStartDate || hasEndDate)) {
+    throw new CliError("Use either --month or --start-date/--end-date, but not both.");
+  }
+
+  if (params.month !== undefined) {
+    const { startDate, endDate } = monthToDateRange(params.month);
+    searchParams.set("start_date", startDate);
+    searchParams.set("end_date", endDate);
+    return;
+  }
+
+  if (!hasStartDate && !hasEndDate) {
+    throw new CliError("Provide --month or both --start-date and --end-date.");
+  }
+
+  if (hasStartDate !== hasEndDate) {
+    throw new CliError("Provide both --start-date and --end-date, or use --month.");
   }
 
   appendDateRangeParams(searchParams, params);

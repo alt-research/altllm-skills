@@ -53,6 +53,11 @@ Current commands:
 - `altllm cloud-claw-delete`
 - `altllm cloud-claw-logs`
 
+Common aliases:
+
+- `altllm balance` -> `altllm credit`
+- `altllm keys` -> `altllm list-api-keys`
+
 Portal commands target the AltLLM Portal API. Cloud Claw commands target Cloud Claw through Portal SSO. The `altllm` CLI commands do not operate the OpenAI-compatible gateway; generated API keys are used there separately.
 
 ## Default API
@@ -476,8 +481,7 @@ View usage by API key:
 ```bash
 node dist/cli.js usage-by-key \
   --base-url https://platform-api.altllm.ai \
-  --start-date 2026-03-01 \
-  --end-date 2026-03-31
+  --month 2026-03
 ```
 
 ## Payments

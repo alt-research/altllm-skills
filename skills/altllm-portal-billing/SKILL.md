@@ -34,7 +34,8 @@ Balance, promo, transaction history, and usage analytics for the local `altllm` 
 - `transactions` supports `--page`, `--limit`, and `--type`.
 - `usage-summary` currently reflects the current calendar month only.
 - `usage-timeline` and `usage-by-model` support either `--month` or a complete explicit date range.
-- `usage-by-key` currently requires a complete explicit date range.
+- `usage-by-key` supports either `--month` or a complete explicit date range.
+- `balance` is an alias for `credit`.
 
 ## Reference
 

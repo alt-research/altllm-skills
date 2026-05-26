@@ -6,6 +6,7 @@ import {
   appendDateRangeParams,
   appendMonthOrDateRangeParams,
   appendPaginationParams,
+  appendRequiredDateRangeOrMonthParams,
   appendRequiredDateRangeParams,
   parseTransactionFilterType,
 } from "../src/lib/history.js";
@@ -98,6 +99,38 @@ test("appendRequiredDateRangeParams requires both dates", () => {
         endDate: "2024-02-29",
       }),
     "Provide both --start-date and --end-date."
+  );
+});
+
+test("appendRequiredDateRangeOrMonthParams expands month shortcuts", () => {
+  const searchParams = new URLSearchParams();
+
+  appendRequiredDateRangeOrMonthParams(searchParams, { month: "2024-02" });
+
+  assert.equal(searchParams.get("start_date"), "2024-02-01");
+  assert.equal(searchParams.get("end_date"), "2024-02-29");
+});
+
+test("appendRequiredDateRangeOrMonthParams rejects missing or ambiguous ranges", () => {
+  assertCliError(
+    () => appendRequiredDateRangeOrMonthParams(new URLSearchParams(), {}),
+    "Provide --month or both --start-date and --end-date."
+  );
+  assertCliError(
+    () =>
+      appendRequiredDateRangeOrMonthParams(new URLSearchParams(), {
+        month: "2024-02",
+        startDate: "2024-02-01",
+        endDate: "2024-02-29",
+      }),
+    "Use either --month or --start-date/--end-date, but not both."
+  );
+  assertCliError(
+    () =>
+      appendRequiredDateRangeOrMonthParams(new URLSearchParams(), {
+        startDate: "2024-02-01",
+      }),
+    "Provide both --start-date and --end-date, or use --month."
   );
 });
 
