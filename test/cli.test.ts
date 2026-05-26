@@ -39,6 +39,9 @@ test("root help highlights aliases and common examples", async () => {
   assert.equal(result.code, 0);
   assert.match(result.stdout, /Common aliases:/);
   assert.match(result.stdout, /altllm balance\s+alias for credit/);
+  assert.match(result.stdout, /altllm whoami\s+alias for status/);
+  assert.match(result.stdout, /status\|whoami/);
+  assert.match(result.stdout, /altllm status/);
   assert.match(result.stdout, /altllm usage-by-key --month 2026-05/);
 });
 

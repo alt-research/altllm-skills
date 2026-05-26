@@ -169,18 +169,18 @@ real on-chain payment without explicit approval.
 
 ## Functional Test Matrix
 
-Run these commands per user with that user's session file. Set the date range to
-the current UTC month unless the test is intentionally targeting another period:
+Run these commands per user with that user's session file. Usage commands
+default to the current UTC month unless the test intentionally passes another
+period:
 
 ```bash
-START_DATE="$(date -u +%Y-%m-01)"
-END_DATE="$(date -u +%F)"
+node dist/cli.js status --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js credit --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js transactions --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js usage-summary --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js usage-timeline --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js usage-by-model --base-url "$BASE_URL" --session-file "$SESSION"
-node dist/cli.js usage-by-key --start-date "$START_DATE" --end-date "$END_DATE" --base-url "$BASE_URL" --session-file "$SESSION"
+node dist/cli.js usage-by-key --base-url "$BASE_URL" --session-file "$SESSION"
 node dist/cli.js list-api-keys --base-url "$BASE_URL" --session-file "$SESSION"
 ```
 

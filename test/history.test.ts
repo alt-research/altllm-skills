@@ -8,6 +8,7 @@ import {
   appendPaginationParams,
   appendRequiredDateRangeOrMonthParams,
   appendRequiredDateRangeParams,
+  formatUtcMonth,
   parseTransactionFilterType,
 } from "../src/lib/history.js";
 
@@ -88,6 +89,14 @@ test("appendMonthOrDateRangeParams rejects ambiguous or partial ranges", () => {
   );
 });
 
+test("appendMonthOrDateRangeParams can default to a UTC month", () => {
+  const searchParams = new URLSearchParams();
+
+  appendMonthOrDateRangeParams(searchParams, {}, { defaultMonth: "2024-02" });
+
+  assert.equal(searchParams.get("month"), "2024-02");
+});
+
 test("appendRequiredDateRangeParams requires both dates", () => {
   assertCliError(
     () => appendRequiredDateRangeParams(new URLSearchParams(), {}),
@@ -109,6 +118,23 @@ test("appendRequiredDateRangeOrMonthParams expands month shortcuts", () => {
 
   assert.equal(searchParams.get("start_date"), "2024-02-01");
   assert.equal(searchParams.get("end_date"), "2024-02-29");
+});
+
+test("appendRequiredDateRangeOrMonthParams can default to a month range", () => {
+  const searchParams = new URLSearchParams();
+
+  appendRequiredDateRangeOrMonthParams(
+    searchParams,
+    {},
+    { defaultMonth: "2024-02" }
+  );
+
+  assert.equal(searchParams.get("start_date"), "2024-02-01");
+  assert.equal(searchParams.get("end_date"), "2024-02-29");
+});
+
+test("formatUtcMonth formats the month in UTC", () => {
+  assert.equal(formatUtcMonth(new Date("2024-12-31T23:59:59Z")), "2024-12");
 });
 
 test("appendRequiredDateRangeOrMonthParams rejects missing or ambiguous ranges", () => {

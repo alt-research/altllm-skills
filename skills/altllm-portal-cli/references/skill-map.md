@@ -6,7 +6,7 @@ This file maps local CLI commands to the focused repo-local skills.
 
 | Skill | Commands | Notes |
 |---|---|---|
-| `altllm-portal-auth` | `login-wallet` | Local signing, challenge preparation, external signature verification |
+| `altllm-portal-auth` | `login-wallet`, `status`, `logout` | Local signing, challenge preparation, external signature verification, saved-session inspection |
 | `altllm-portal-api-keys` | `list-api-keys`, `create-api-key`, `get-api-key`, `update-api-key`, `revoke-api-key` | Keys are for the OpenAI-compatible gateway; Flex-only `altllm-flex-*` model IDs are valid allowlist entries when backend access permits |
 | `altllm-portal-billing` | `credit`, `redeem-promo`, `transactions`, `usage-summary`, `usage-timeline`, `usage-by-model`, `usage-by-key` | Mostly raw Portal API JSON responses; use `credit` for returned plan/model-access metadata such as `subscription_tier` |
 | `altllm-portal-payments` | `topup-crypto`, `payment-status`, `pay-payment-link` | Includes direct-payment guardrails, supported automatic payment currencies, and credit top-up discount-code metadata |
@@ -17,6 +17,7 @@ This file maps local CLI commands to the focused repo-local skills.
   - [src/cli.ts](../../../src/cli.ts)
 - Auth flow:
   - [src/commands/login-wallet.ts](../../../src/commands/login-wallet.ts)
+  - [src/commands/status.ts](../../../src/commands/status.ts)
   - [src/lib/wallet.ts](../../../src/lib/wallet.ts)
 - API key flow:
   - [src/lib/keys.ts](../../../src/lib/keys.ts)

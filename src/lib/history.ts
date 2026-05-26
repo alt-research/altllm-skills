@@ -3,6 +3,12 @@ import { CliError } from "./api.js";
 export const TRANSACTION_FILTER_TYPES = ["all", "credit", "usage", "refund"] as const;
 export type TransactionFilterType = (typeof TRANSACTION_FILTER_TYPES)[number];
 
+export function formatUtcMonth(value = new Date()): string {
+  const year = value.getUTCFullYear();
+  const month = String(value.getUTCMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
 function normalizeMonth(value: string): string {
   const month = value.trim();
   const match = /^(\d{4})-(\d{2})$/.exec(month);
@@ -105,7 +111,8 @@ export function appendDateRangeParams(
 
 export function appendMonthOrDateRangeParams(
   searchParams: URLSearchParams,
-  params: { startDate?: string; endDate?: string; month?: string }
+  params: { startDate?: string; endDate?: string; month?: string },
+  options: { defaultMonth?: string } = {}
 ): void {
   const hasMonth = params.month !== undefined;
   const hasStartDate = params.startDate !== undefined;
@@ -117,6 +124,11 @@ export function appendMonthOrDateRangeParams(
 
   if (hasStartDate !== hasEndDate) {
     throw new CliError("Provide both --start-date and --end-date for an explicit date range.");
+  }
+
+  if (!hasMonth && !hasStartDate && !hasEndDate && options.defaultMonth !== undefined) {
+    searchParams.set("month", normalizeMonth(options.defaultMonth));
+    return;
   }
 
   appendDateRangeParams(searchParams, params);
@@ -142,7 +154,8 @@ export function appendRequiredDateRangeParams(
 
 export function appendRequiredDateRangeOrMonthParams(
   searchParams: URLSearchParams,
-  params: { startDate?: string; endDate?: string; month?: string }
+  params: { startDate?: string; endDate?: string; month?: string },
+  options: { defaultMonth?: string } = {}
 ): void {
   const hasMonth = params.month !== undefined;
   const hasStartDate = params.startDate !== undefined;
@@ -154,6 +167,13 @@ export function appendRequiredDateRangeOrMonthParams(
 
   if (params.month !== undefined) {
     const { startDate, endDate } = monthToDateRange(params.month);
+    searchParams.set("start_date", startDate);
+    searchParams.set("end_date", endDate);
+    return;
+  }
+
+  if (!hasStartDate && !hasEndDate && options.defaultMonth !== undefined) {
+    const { startDate, endDate } = monthToDateRange(options.defaultMonth);
     searchParams.set("start_date", startDate);
     searchParams.set("end_date", endDate);
     return;

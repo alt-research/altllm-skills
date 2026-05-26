@@ -1,5 +1,5 @@
 import { requestJson } from "../lib/api.js";
-import { appendMonthOrDateRangeParams } from "../lib/history.js";
+import { appendMonthOrDateRangeParams, formatUtcMonth } from "../lib/history.js";
 import { resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -14,11 +14,17 @@ export interface UsageTimelineOptions {
 
 export async function usageTimeline(options: UsageTimelineOptions): Promise<void> {
   const searchParams = new URLSearchParams();
-  appendMonthOrDateRangeParams(searchParams, {
-    startDate: options.startDate,
-    endDate: options.endDate,
-    month: options.month,
-  });
+  appendMonthOrDateRangeParams(
+    searchParams,
+    {
+      startDate: options.startDate,
+      endDate: options.endDate,
+      month: options.month,
+    },
+    {
+      defaultMonth: formatUtcMonth(),
+    }
+  );
 
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,
