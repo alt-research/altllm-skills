@@ -290,7 +290,7 @@ export async function fetchPaymentLinkStatus(
 }
 
 export function isTerminalPaymentLinkStatus(status: string): boolean {
-  return TERMINAL_STATUSES.has(status);
+  return TERMINAL_STATUSES.has(status.trim().toLowerCase());
 }
 
 export function formatPaymentLinkRecord(

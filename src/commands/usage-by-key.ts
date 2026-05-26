@@ -12,16 +12,16 @@ export interface UsageByKeyOptions {
 }
 
 export async function usageByKey(options: UsageByKeyOptions): Promise<void> {
-  const { baseUrl, token } = await resolvePortalContext({
-    baseUrl: options.baseUrl,
-    sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
-    allowTokenHostMismatch: options.allowTokenHostMismatch,
-  });
-
   const searchParams = new URLSearchParams();
   appendRequiredDateRangeParams(searchParams, {
     startDate: options.startDate,
     endDate: options.endDate,
+  });
+
+  const { baseUrl, token } = await resolvePortalContext({
+    baseUrl: options.baseUrl,
+    sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const suffix = searchParams.size > 0 ? `?${searchParams.toString()}` : "";

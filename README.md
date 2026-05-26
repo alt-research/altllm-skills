@@ -71,6 +71,7 @@ If a command is reusing your saved Portal session token, the CLI will refuse to 
 
 ```bash
 npm install
+npm test
 npm run typecheck
 npm run build
 ```

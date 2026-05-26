@@ -13,17 +13,17 @@ export interface UsageTimelineOptions {
 }
 
 export async function usageTimeline(options: UsageTimelineOptions): Promise<void> {
-  const { baseUrl, token } = await resolvePortalContext({
-    baseUrl: options.baseUrl,
-    sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
-    allowTokenHostMismatch: options.allowTokenHostMismatch,
-  });
-
   const searchParams = new URLSearchParams();
   appendMonthOrDateRangeParams(searchParams, {
     startDate: options.startDate,
     endDate: options.endDate,
     month: options.month,
+  });
+
+  const { baseUrl, token } = await resolvePortalContext({
+    baseUrl: options.baseUrl,
+    sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
   });
 
   const suffix = searchParams.size > 0 ? `?${searchParams.toString()}` : "";

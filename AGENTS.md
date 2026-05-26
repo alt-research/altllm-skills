@@ -86,6 +86,7 @@ Before shipping a change:
 
 ```bash
 npm install
+npm test
 npm run typecheck
 npm run build
 ```
