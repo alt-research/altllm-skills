@@ -9,6 +9,8 @@ node dist/cli.js list-api-keys \
   --base-url https://platform-api.altllm.ai
 ```
 
+Alias: `node dist/cli.js keys`
+
 ### Create key
 
 ```bash

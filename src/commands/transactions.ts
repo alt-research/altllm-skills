@@ -16,12 +16,6 @@ export interface TransactionsOptions {
 }
 
 export async function transactions(options: TransactionsOptions): Promise<void> {
-  const { baseUrl, token } = await resolvePortalContext({
-    baseUrl: options.baseUrl,
-    sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
-    allowTokenHostMismatch: options.allowTokenHostMismatch,
-  });
-
   const searchParams = new URLSearchParams();
   appendPaginationParams(searchParams, {
     page: options.page,
@@ -31,6 +25,12 @@ export async function transactions(options: TransactionsOptions): Promise<void> 
   if (options.type !== undefined) {
     searchParams.set("type", parseTransactionFilterType(options.type));
   }
+
+  const { baseUrl, token } = await resolvePortalContext({
+    baseUrl: options.baseUrl,
+    sessionFile: options.sessionFile || DEFAULT_SESSION_FILE,
+    allowTokenHostMismatch: options.allowTokenHostMismatch,
+  });
 
   const suffix = searchParams.size > 0 ? `?${searchParams.toString()}` : "";
   const result = await requestJson<Record<string, unknown>>({

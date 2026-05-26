@@ -9,6 +9,7 @@
     "prepare:test-wallets": "node scripts/prepare-test-wallets.mjs",
     "e2e:model-billing": "node scripts/run-model-billing-e2e.mjs",
     "smoke:multi-user": "node scripts/run-multi-user-smoke.mjs",
+    "test": "node --import tsx --test \"test/**/*.test.ts\"",
     "typecheck": "tsc --noEmit"
   },
   "repository": {

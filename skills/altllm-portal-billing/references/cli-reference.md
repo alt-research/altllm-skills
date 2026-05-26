@@ -9,6 +9,8 @@ node dist/cli.js credit \
   --base-url https://platform-api.altllm.ai
 ```
 
+Alias: `node dist/cli.js balance`
+
 `credit` passes through plan/model-access metadata when Portal returns it. Use it to inspect Personal tiers (`free`, `basic`, `pro`, `power`) or Business/Flex (`subscription_tier: "flex"`) status and allowed models. Flex can include normal AltLLM models plus Flex-only IDs such as `altllm-flex-gpt-5.5`, `altllm-flex-opus-4.7`, and `altllm-flex-gemini-3.1`, subject to backend access checks.
 
 ### Redeem promo
@@ -70,8 +72,7 @@ node dist/cli.js usage-by-model \
 ```bash
 node dist/cli.js usage-by-key \
   --base-url https://platform-api.altllm.ai \
-  --start-date 2026-03-01 \
-  --end-date 2026-03-31
+  --month 2026-03
 ```
 
 ## Notes
@@ -80,4 +81,4 @@ node dist/cli.js usage-by-key \
 - This repo does not implement plan billing logic or bypass Portal/Gateway model-access checks.
 - Transaction history and usage analytics are useful for validating gateway metering behavior.
 - `usage-timeline` and `usage-by-model` accept either `--month` or a complete `--start-date` / `--end-date` range, but not both.
-- `usage-by-key` requires both `--start-date` and `--end-date`.
+- `usage-by-key` accepts either `--month` or a complete `--start-date` / `--end-date` range, but not both.

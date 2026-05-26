@@ -70,6 +70,24 @@ function parsePositiveNumberOption(value: string, optionName: string): number {
   return parsed;
 }
 
+function parseMinimumNumberOption(
+  value: string,
+  optionName: string,
+  minimum: number,
+  unitDescription: string
+): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    throw new CliError(`${optionName} must be a number.`);
+  }
+
+  if (parsed < minimum) {
+    throw new CliError(`${optionName} must be >= ${minimum} ${unitDescription}.`);
+  }
+
+  return parsed;
+}
+
 function parseBooleanOption(value: string, optionName: string): boolean {
   const normalized = value.trim().toLowerCase();
   if (normalized === "true") {
@@ -85,7 +103,24 @@ function parseBooleanOption(value: string, optionName: string): boolean {
 program
   .name("altllm")
   .version(packageJson.version)
-  .description("CLI for AltLLM Portal and Cloud Claw operations");
+  .description("CLI for AltLLM Portal and Cloud Claw operations")
+  .showHelpAfterError("(run 'altllm --help' for available commands)")
+  .showSuggestionAfterError()
+  .addHelpText(
+    "after",
+    `
+Common aliases:
+  altllm balance            alias for credit
+  altllm keys               alias for list-api-keys
+
+Examples:
+  altllm login-wallet --wallet-address 0x... --private-key-env ALTLLM_WALLET_PRIVATE_KEY
+  altllm balance
+  altllm keys
+  altllm usage-by-key --month 2026-05
+  altllm topup-crypto --amount 25 --pay-currency usdcbase
+`
+  );
 
 program
   .command("login-wallet")
@@ -348,6 +383,7 @@ program
 
 program
   .command("credit")
+  .alias("balance")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
@@ -434,6 +470,7 @@ program
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
+  .option("--month <yyyy-mm>", "Month shortcut in YYYY-MM format")
   .option("--start-date <yyyy-mm-dd>", "Start date in YYYY-MM-DD format")
   .option("--end-date <yyyy-mm-dd>", "End date in YYYY-MM-DD format")
   .action(async (options) => {
@@ -441,6 +478,7 @@ program
       baseUrl: options.baseUrl,
       sessionFile: options.sessionFile,
       allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
+      month: options.month,
       startDate: options.startDate,
       endDate: options.endDate,
     });
@@ -448,6 +486,7 @@ program
 
 program
   .command("list-api-keys")
+  .alias("keys")
   .option("--base-url <url>", "Portal API base URL")
   .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
   .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
@@ -565,7 +604,7 @@ program
   .option("--timeout <seconds>", "Maximum wait time in seconds", "600")
   .action(async (options) => {
     await topupCrypto({
-      amount: Number(options.amount),
+      amount: parseMinimumNumberOption(options.amount, "--amount", 0.5, "USD"),
       baseUrl: options.baseUrl,
       payCurrency: options.payCurrency,
       discountCode: options.discountCode,

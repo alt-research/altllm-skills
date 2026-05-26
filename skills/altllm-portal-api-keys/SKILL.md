@@ -32,6 +32,7 @@ Portal API key lifecycle management for the local `altllm` CLI.
 - Flex users can allowlist normal AltLLM models and Flex-only `altllm-flex-*` models; backend access checks remain authoritative.
 - `update-api-key --status disabled` is reversible.
 - `revoke-api-key` is permanent.
+- `keys` is an alias for `list-api-keys`.
 
 ## Known Production Limitation
 
