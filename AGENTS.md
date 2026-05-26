@@ -23,6 +23,9 @@ Current commands:
 - `altllm topup-crypto`
 - `altllm payment-status`
 - `altllm pay-payment-link`
+- `altllm b402-supported`
+- `altllm b402-verify`
+- `altllm b402-settle`
 - `altllm cloud-claw-me`
 - `altllm cloud-claw-deployments`
 - `altllm cloud-claw-deployment`

@@ -41,6 +41,9 @@ Current commands:
 - `altllm topup-crypto`
 - `altllm payment-status`
 - `altllm pay-payment-link`
+- `altllm b402-supported`
+- `altllm b402-verify`
+- `altllm b402-settle`
 - `altllm cloud-claw-me`
 - `altllm cloud-claw-deployments`
 - `altllm cloud-claw-deployment`
@@ -154,6 +157,28 @@ Use this when the user wants current balance, billing transactions, or usage his
 `altllm-portal-payments` -> `altllm-portal-billing`
 
 Use this when the user needs to create a payment link, wait for settlement, and then confirm the resulting balance or usage changes.
+
+**Binance B402 / x402 Merchant Flow**
+
+Use this when testing Binance B402 facilitator endpoints for x402:
+
+```bash
+export B402_BASE_URL=<b402-base-url>
+export B402_CLIENT_ID=<client-id>
+export B402_ACCESS_TOKEN=<access-token>
+export B402_PRIVATE_KEY_FILE=/path/to/private_key.base64
+
+node dist/cli.js b402-supported \
+  --private-key-file "$B402_PRIVATE_KEY_FILE"
+```
+
+`b402-supported` sends `{}` by default. `b402-verify` and `b402-settle`
+require `--body-file` with the buyer-signed x402 JSON payload:
+
+```bash
+node dist/cli.js b402-verify --body-file payment.json
+node dist/cli.js b402-settle --body-file payment.json
+```
 
 **Launch and Manage AltClaw**
 

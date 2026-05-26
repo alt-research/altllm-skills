@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 
 import { Command } from "commander";
 
+import { b402Command, type B402Endpoint } from "./commands/b402.js";
 import { createApiKey } from "./commands/create-api-key.js";
 import { cloudClawDeployment } from "./commands/cloud-claw-deployment.js";
 import { cloudClawDeploy } from "./commands/cloud-claw-deploy.js";
@@ -119,8 +120,57 @@ Examples:
   altllm keys
   altllm usage-by-key --month 2026-05
   altllm topup-crypto --amount 25 --pay-currency usdcbase
+  altllm b402-supported --base-url https://... --client-id ...
 `
   );
+
+function addB402Command(endpoint: B402Endpoint, description: string): void {
+  program
+    .command(`b402-${endpoint}`)
+    .description(description)
+    .option("--base-url <url>", "B402 API base URL")
+    .option("--client-id <id>", "B402 merchant client id")
+    .option(
+      "--client-id-env <name>",
+      "Environment variable containing the B402 client id",
+      "B402_CLIENT_ID"
+    )
+    .option(
+      "--access-token-env <name>",
+      "Environment variable containing the B402 access token",
+      "B402_ACCESS_TOKEN"
+    )
+    .option("--access-token-file <path>", "File containing the B402 access token")
+    .option(
+      "--private-key-env <name>",
+      "Environment variable containing the Base64 PKCS#8 merchant private key",
+      "B402_PRIVATE_KEY_B64"
+    )
+    .option(
+      "--private-key-file <path>",
+      "File containing the Base64 PKCS#8 or PEM merchant private key"
+    )
+    .option(
+      "--body-file <path>",
+      "JSON body file; required for b402-verify and b402-settle"
+    )
+    .action(async (options) => {
+      await b402Command(endpoint, {
+        baseUrl: options.baseUrl,
+        clientId: options.clientId,
+        clientIdEnv: options.clientIdEnv,
+        accessTokenEnv: options.accessTokenEnv,
+        accessTokenFile: options.accessTokenFile,
+        privateKeyEnv: options.privateKeyEnv,
+        privateKeyFile: options.privateKeyFile,
+        bodyFile: options.bodyFile,
+      });
+    });
+}
+
+addB402Command("supported", "Fetch Binance B402 x402 supported configurations");
+addB402Command("verify", "Verify a buyer-signed x402 payment payload with B402");
+addB402Command("settle", "Settle a verified x402 payment payload with B402");
 
 program
   .command("login-wallet")

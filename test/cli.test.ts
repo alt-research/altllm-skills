@@ -61,6 +61,15 @@ test("aliases expose command help", async () => {
   assert.match(keys.stdout, /Usage: altllm list-api-keys\|keys/);
 });
 
+test("b402 command help exposes x402 body-file workflow", async () => {
+  const result = await runCli(["b402-verify", "--help"]);
+
+  assert.equal(result.code, 0);
+  assert.match(result.stdout, /Usage: altllm b402-verify/);
+  assert.match(result.stdout, /--body-file <path>/);
+  assert.match(result.stdout, /B402 access token/);
+});
+
 test("topup amount parsing fails before session loading", async () => {
   const result = await runCli([
     "topup-crypto",
