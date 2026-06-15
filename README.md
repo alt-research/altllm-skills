@@ -26,6 +26,7 @@ Current commands:
 
 - `altllm login-wallet`
 - `altllm logout`
+- `altllm status`
 - `altllm credit`
 - `altllm transactions`
 - `altllm usage-summary`
@@ -57,6 +58,7 @@ Common aliases:
 
 - `altllm balance` -> `altllm credit`
 - `altllm keys` -> `altllm list-api-keys`
+- `altllm whoami` -> `altllm status`
 
 Portal commands target the AltLLM Portal API. Cloud Claw commands target Cloud Claw through Portal SSO. The `altllm` CLI commands do not operate the OpenAI-compatible gateway; generated API keys are used there separately.
 
@@ -308,6 +310,7 @@ Notes:
 - Automatic local signing is only allowed for the default production Portal API or loopback hosts. For other hosts, use `--prepare` and sign externally.
 - The current Portal backend still validates EVM addresses and Ethereum-style signatures.
 - If you run `login-wallet` without a local private key or `--signature`, it now returns a challenge payload instead of failing immediately.
+- Use `node dist/cli.js status` or `node dist/cli.js whoami` to inspect the saved session user and target URL without exposing the token.
 
 ## API Keys
 
@@ -464,24 +467,21 @@ View daily usage history:
 
 ```bash
 node dist/cli.js usage-timeline \
-  --base-url https://platform-api.altllm.ai \
-  --month 2026-03
+  --base-url https://platform-api.altllm.ai
 ```
 
 View usage by model:
 
 ```bash
 node dist/cli.js usage-by-model \
-  --base-url https://platform-api.altllm.ai \
-  --month 2026-03
+  --base-url https://platform-api.altllm.ai
 ```
 
 View usage by API key:
 
 ```bash
 node dist/cli.js usage-by-key \
-  --base-url https://platform-api.altllm.ai \
-  --month 2026-03
+  --base-url https://platform-api.altllm.ai
 ```
 
 ## Payments

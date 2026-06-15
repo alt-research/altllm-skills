@@ -1,5 +1,8 @@
 import { requestJson } from "../lib/api.js";
-import { appendRequiredDateRangeOrMonthParams } from "../lib/history.js";
+import {
+  appendRequiredDateRangeOrMonthParams,
+  formatUtcMonth,
+} from "../lib/history.js";
 import { resolvePortalContext, writeJson } from "../lib/keys.js";
 import { DEFAULT_SESSION_FILE } from "../lib/session.js";
 
@@ -14,11 +17,17 @@ export interface UsageByKeyOptions {
 
 export async function usageByKey(options: UsageByKeyOptions): Promise<void> {
   const searchParams = new URLSearchParams();
-  appendRequiredDateRangeOrMonthParams(searchParams, {
-    startDate: options.startDate,
-    endDate: options.endDate,
-    month: options.month,
-  });
+  appendRequiredDateRangeOrMonthParams(
+    searchParams,
+    {
+      startDate: options.startDate,
+      endDate: options.endDate,
+      month: options.month,
+    },
+    {
+      defaultMonth: formatUtcMonth(),
+    }
+  );
 
   const { baseUrl, token } = await resolvePortalContext({
     baseUrl: options.baseUrl,

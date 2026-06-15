@@ -8,6 +8,7 @@ Current commands:
 
 - `altllm login-wallet`
 - `altllm logout`
+- `altllm status`
 - `altllm credit`
 - `altllm transactions`
 - `altllm usage-summary`
@@ -39,6 +40,7 @@ Common aliases:
 
 - `altllm balance` -> `altllm credit`
 - `altllm keys` -> `altllm list-api-keys`
+- `altllm whoami` -> `altllm status`
 
 Portal commands target the AltLLM Portal API. Cloud Claw commands target Cloud Claw through Portal SSO. The `altllm` CLI commands do not operate the OpenAI-compatible gateway; generated API keys are used there separately.
 

@@ -25,6 +25,7 @@ import { logout } from "./commands/logout.js";
 import { payPaymentLink } from "./commands/pay-payment-link.js";
 import { redeemPromo } from "./commands/redeem-promo.js";
 import { revokeApiKey } from "./commands/revoke-api-key.js";
+import { status } from "./commands/status.js";
 import { paymentStatus, topupCrypto } from "./commands/topup-crypto.js";
 import { updateApiKey } from "./commands/update-api-key.js";
 import { transactions } from "./commands/transactions.js";
@@ -112,9 +113,11 @@ program
 Common aliases:
   altllm balance            alias for credit
   altllm keys               alias for list-api-keys
+  altllm whoami             alias for status
 
 Examples:
   altllm login-wallet --wallet-address 0x... --private-key-env ALTLLM_WALLET_PRIVATE_KEY
+  altllm status
   altllm balance
   altllm keys
   altllm usage-by-key --month 2026-05
@@ -161,6 +164,21 @@ program
   .action(async (options) => {
     await logout({
       sessionFile: options.sessionFile,
+    });
+  });
+
+program
+  .command("status")
+  .alias("whoami")
+  .description("Show saved Portal session user and target URL status")
+  .option("--base-url <url>", "Portal API base URL to compare with the saved session")
+  .option("--session-file <path>", "Path to the saved Portal session", DEFAULT_SESSION_FILE)
+  .option("--allow-token-host-mismatch", PORTAL_TOKEN_HOST_MISMATCH_OPTION, false)
+  .action(async (options) => {
+    await status({
+      baseUrl: options.baseUrl,
+      sessionFile: options.sessionFile,
+      allowTokenHostMismatch: Boolean(options.allowTokenHostMismatch),
     });
   });
 
