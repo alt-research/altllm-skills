@@ -73,6 +73,8 @@ Commands that reuse a saved Portal session token, or forward that token to Cloud
   - focused balance/history/usage skill
 - `skills/altllm-portal-payments/`
   - focused payment-link and direct-payment skill
+- `skills/altllm-x402/`
+  - focused x402 Portal credit top-up and Binance B402 skill
 - `skills/_shared/`
   - shared preflight and environment notes reused by the focused skills
 
@@ -83,6 +85,8 @@ Commands that reuse a saved Portal session token, or forward that token to Cloud
 - Keep command output machine-readable JSON.
 - Fail fast on unsupported chains or `pay_currency` values.
 - Do not silently downgrade from direct payment mode to hosted checkout mode.
+- Keep NOWPayments payment-link flows separate from x402 Portal quote/settle flows.
+- For current x402 work, match `alt-research/altllm`: Binance B402, `bsc`/`eip155:56`, and normally `usdt`.
 - Do not print private keys or persist them outside user-controlled environment variables or files.
 
 ## Validation
@@ -124,6 +128,16 @@ Direct payment execution currently assumes the API returns:
 - `pay_currency`
 
 Only supported EVM-compatible `pay_currency` values should be auto-paid. Unsupported values must return a clear error.
+
+## x402 Constraints
+
+x402 support in this repository is currently skill/documentation guidance, not an `altllm` CLI command surface. The implementation source of truth is `alt-research/altllm`.
+
+- Do not describe NOWPayments hosted/direct payment links as x402.
+- Current AltLLM x402 top-ups use Portal API `/api/billing/x402/quote`, `/api/billing/x402/settle`, and `/api/billing/x402/{payment_id}/cancel`.
+- Quote BNB Chain mainnet with `network: "bsc"` and usually `asset: "usdt"` unless the main AltLLM repo changes.
+- Keep Portal session tokens and generated AltLLM gateway API keys separate from x402 wallet payment credentials.
+- If an x402-protected service calls the AltLLM gateway, keep the AltLLM API key server-side.
 
 ## Security
 

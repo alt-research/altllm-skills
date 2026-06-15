@@ -10,6 +10,7 @@ If you want a task-oriented guide for what an agent can do with these skills, st
 
 - the **Portal API**, which handles user auth, wallet login, API keys, credit balance, billing history, promo redemption, and crypto payment links
 - the **OpenAI-compatible gateway**, which is where generated API keys are used to call AltLLM models
+- **x402 Portal credit top-ups**, where AltLLM Portal can quote and settle BSC/USDT wallet payments through Binance B402
 
 This repository is the **TypeScript CLI for the Portal side** of that platform. It is meant for operational tasks such as:
 
@@ -17,6 +18,7 @@ This repository is the **TypeScript CLI for the Portal side** of that platform. 
 - creating and managing Portal-issued API keys
 - checking balance, transactions, and usage history
 - creating and settling crypto top-up payments
+- documenting and operating x402 credit top-up flows implemented in the main AltLLM Portal
 
 This repository also includes **repo-local skills** for coding agents. Those skills are not runtime dependencies of AltLLM itself. They are structured guidance files that help agents choose the right commands, follow the right workflow, and avoid mixing up Portal operations with gateway usage.
 
@@ -129,7 +131,8 @@ evidence, revokes the key, and prints a redacted JSON report.
 | `altllm-portal-auth` | Wallet login, logout, and session bootstrap | Wallet challenge, local signing, external signature verification, local session removal |
 | `altllm-portal-api-keys` | Portal API key lifecycle | Create, inspect, disable, re-enable, or revoke API keys |
 | `altllm-portal-billing` | Balance, promo, transactions, and usage analytics | Credit balance, promo redemption, billing history, usage views |
-| `altllm-portal-payments` | Payment-link creation, polling, and direct payment execution | Crypto top-up, payment status, direct wallet payment |
+| `altllm-portal-payments` | NOWPayments link creation, polling, and direct payment execution | Crypto top-up links, payment status, direct wallet payment |
+| `altllm-x402` | x402 Portal credit top-up guidance | BSC/USDT quotes, discount top-ups, wallet signing, settlement |
 | `altllm-portal-cli` | Umbrella navigation skill | Workflows that span multiple domains |
 | `cloud-claw-launch-agent` | Launch a new AltClaw / OpenClaw / PicoClaw / Ottie VM | New deployment workflow through the local `cloud-claw-*` CLI commands |
 | `cloud-claw-manage-vm` | View and manage existing Cloud Claw VMs | List, inspect, start, stop, renew, logs, and dashboard |
@@ -154,6 +157,12 @@ Use this when the user wants current balance, billing transactions, or usage his
 `altllm-portal-payments` -> `altllm-portal-billing`
 
 Use this when the user needs to create a payment link, wait for settlement, and then confirm the resulting balance or usage changes.
+
+**Create and Settle x402 Credit Top-Up**
+
+`altllm-x402`
+
+Use this when the user needs to create an AltLLM Portal x402 quote, apply a discount code, submit a wallet-signed payment payload, cancel a quoted checkout, or debug Binance B402 facilitator errors. The current local `altllm` CLI does not expose these x402 endpoints.
 
 **Launch and Manage AltClaw**
 
@@ -600,7 +609,8 @@ node dist/cli.js login-wallet \
 - `skills/altllm-portal-auth/`: wallet login and challenge/signature flow
 - `skills/altllm-portal-api-keys/`: Portal API key lifecycle
 - `skills/altllm-portal-billing/`: balance, promo, transactions, and usage history
-- `skills/altllm-portal-payments/`: payment-link creation, polling, and direct payment
+- `skills/altllm-portal-payments/`: NOWPayments link creation, polling, and direct payment
+- `skills/altllm-x402/`: x402 Portal credit top-up and Binance B402 guidance
 - `skills/cloud-claw/`: umbrella skill for Cloud Claw workflows
 - `skills/cloud-claw-launch-agent/`: new deployment workflow for AltClaw / OpenClaw / PicoClaw / Ottie
 - `skills/cloud-claw-manage-vm/`: VM list, lifecycle, logs, renewals, and dashboard access

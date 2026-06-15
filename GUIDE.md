@@ -21,6 +21,7 @@ Main areas:
 - balance, transaction history, promo redemption, and usage reporting
 - API key creation and listing
 - crypto top-up payment link creation and direct-payment execution
+- x402 Portal credit top-up guidance for BSC/USDT wallet payments
 - Cloud Claw VM deployment and lifecycle operations
 
 Typical end-to-end workflows it can complete:
@@ -29,6 +30,7 @@ Typical end-to-end workflows it can complete:
 - check credit, inspect recent transactions, and explain where balance changed
 - redeem a promo code and verify the new balance
 - create a direct Base payment link and, if a funded wallet key is available, pay it
+- create an x402 quote for BSC/USDT credits, settle it after wallet signing, and verify balance
 - deploy a PicoClaw or OpenClaw VM, confirm status, stop it, and delete it
 
 ## What To Ask For
@@ -42,6 +44,8 @@ Examples:
 - "Create an API key for altllm-basic and test it with say hi"
 - "Redeem this promo code"
 - "Create a Base USDC top-up link for 5 dollars"
+- "Create an x402 USDT top-up quote with this discount code"
+- "Settle this x402 payment payload and check my balance"
 - "Deploy a PicoClaw with this Telegram bot token"
 - "Stop that VM and delete it after it is terminated"
 
@@ -63,6 +67,12 @@ Useful inputs by task:
   - target amount in USD credit
   - chain/pay currency such as `usdcbase`
   - a funded wallet private key via `--private-key-env`, `--private-key-file`, or guarded `--private-key` if you want automatic payment
+- x402:
+  - Portal API origin and authenticated Portal bearer token source
+  - credit amount in USD
+  - network and asset, normally `bsc` and `usdt`
+  - optional promo or discount code
+  - wallet signing method, or a signed `payment_payload` file for settlement
 - PicoClaw or Ottie deployment:
   - deployment name, or permission to generate one
   - Telegram bot token
@@ -113,6 +123,8 @@ There are a few important constraints worth knowing up front.
   - `revoke-api-key`
   - list and create still work
 - direct payment is only automatic when an EVM-compatible supported `pay_currency` is returned and the wallet has enough on-chain balance
+- the current `altllm` CLI does not execute x402 payments; current x402 support lives in the main AltLLM Portal API
+- NOWPayments top-up links are separate from AltLLM Portal x402 quote/settle flows
 - Base USDC top-ups require actual `USDC` on Base, not just ETH for gas
 - `topup-crypto` currently requires `--amount >= 0.5`
 - payment-link lookup currently only scans the most recent `100` Portal payment links
@@ -133,6 +145,8 @@ These are good patterns for future tasks:
 - "Create a new API key named X for models Y and Z"
 - "Create a Base payment link for N dollars and tell me the pay address"
 - "Pay this payment link with the wallet key I provide and wait for settlement"
+- "Create an x402 quote for $100 credits with code LAUNCH20"
+- "Debug why this x402 settlement is failing with the Binance facilitator"
 - "Deploy a PicoClaw with this bot token, confirm it is running, then show me the bot username"
 - "Stop this VM, wait until terminated, then delete it"
 
@@ -146,6 +160,7 @@ If you want to inspect the local skill layout:
 - [skills/altllm-portal-api-keys/SKILL.md](./skills/altllm-portal-api-keys/SKILL.md): API key flow
 - [skills/altllm-portal-billing/SKILL.md](./skills/altllm-portal-billing/SKILL.md): billing and usage
 - [skills/altllm-portal-payments/SKILL.md](./skills/altllm-portal-payments/SKILL.md): payment flow
+- [skills/altllm-x402/SKILL.md](./skills/altllm-x402/SKILL.md): x402 Portal credit top-up guidance
 - [skills/cloud-claw/SKILL.md](./skills/cloud-claw/SKILL.md): umbrella Cloud Claw skill
 - [skills/cloud-claw-launch-agent/SKILL.md](./skills/cloud-claw-launch-agent/SKILL.md): VM launch flow
 - [skills/cloud-claw-manage-vm/SKILL.md](./skills/cloud-claw-manage-vm/SKILL.md): VM lifecycle flow
